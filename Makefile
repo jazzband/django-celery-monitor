@@ -1,5 +1,4 @@
 PROJ=django_celery_monitor
-PGPIDENT="Celery Security Team"
 PYTHON=python
 PYTEST=py.test
 GIT=git
@@ -55,7 +54,7 @@ bump-major:
 	bumpversion major
 
 release:
-	python setup.py register sdist bdist_wheel upload --sign --identity="$(PGPIDENT)"
+	python setup.py register sdist bdist_wheel upload --sign
 
 Documentation:
 	(cd "$(SPHINX_DIR)"; $(MAKE) html)
