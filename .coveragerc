@@ -1,0 +1,11 @@
+[run]
+branch = 1
+cover_pylib = 0
+include = *django_celery_monitor/*
+omit = t/*
+
+[report]
+omit =
+    */python?.?/*
+    */site-packages/*
+    */pypy/*
