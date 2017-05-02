@@ -4,8 +4,6 @@ from __future__ import absolute_import, unicode_literals
 from collections import defaultdict
 from datetime import timedelta
 
-from django.conf import settings
-
 from celery import states
 from celery.events.state import Task
 from celery.events.snapshot import Polaroid
