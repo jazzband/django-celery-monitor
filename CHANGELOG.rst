@@ -11,4 +11,11 @@
 :release-date: 2017-05-02 11:25 a.m. UTC+2
 :release-by: Jannis Leidel
 
-- Initial release by extracting the monitors from the old django-celery app.
+- Initial release by extracting the monitor code from the old django-celery app.
+
+- Added ability to override the expiry timedelta for the task monitor via the
+  Celery configuration.
+
+- Added Python 3.6 and Django 1.11 to text matrix. Supported versions of Django
+  1.8 LTS, 1.9, 1.10 and 1.11 LTS. Supported versions of Python are 2.7, 3.4,
+  3.5 and 3.6 (for Django 1.11).

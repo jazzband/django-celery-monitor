@@ -51,7 +51,7 @@ class Camera(Polaroid):
 
     @property
     def expire_task_states(self):
-        """A twople of Celery task states and expiration timedeltas."""
+        """Return a twople of Celery task states and expiration timedeltas."""
         return (
             (SUCCESS_STATES, self.app.conf.monitors_expire_success),
             (states.EXCEPTION_STATES, self.app.conf.monitors_expire_error),

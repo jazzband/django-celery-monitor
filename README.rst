@@ -22,6 +22,36 @@ It provides a Camera class (``django_celery_monitor.camera.Camera``) to be
 used with the Celery events command line tool to automatically populate the
 two models with the current state of the Celery workers and tasks.
 
+Configuration
+=============
+
+There are a few settings that regulate how long the task monitor should keep
+state entries in the database. Either of the three should be a
+``datetime.timedelta`` value or ``None``.
+
+- ``monitor_task_success_expires`` -- Defaults to ``timedelta(days=1)`` (1 day)
+
+  The period of time to retain monitoring information about tasks with a
+  ``SUCCESS`` result.
+
+- ``monitor_task_error_expires`` -- Defaults to ``timedelta(days=3)`` (3 days)
+
+  The period of time to retain monitoring information about tasks with an
+  errornous result (one of the following event states: ``RETRY``, ``FAILURE``,
+  ``REVOKED``.
+
+- ``monitor_task_pending_expires`` -- Defaults to ``timedelta(days=5)`` (5 days)
+
+  The period of time to retain monitoring information about tasks with a
+  pending result (one of the following event states: ``PENDING``, ``RECEIVED``,
+  ``STARTED``, ``REJECTED``, ``RETRY``.
+
+In your Celery configuration simply set them to override the defaults, e.g.::
+
+    from datetime import timedelta
+
+    monitor_task_success_expires = timedelta(days=7)
+
 .. _installation:
 
 Installation
