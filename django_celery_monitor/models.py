@@ -79,7 +79,7 @@ class TaskState(models.Model):
     #: The keyword :ref:`task arguments <celery:calling-basics>`.
     kwargs = models.TextField(_('Keyword arguments'), null=True)
     #: An optional :class:`~datetime.datetime` describing the
-    # :ref:`ETA <celery:calling-eta>` for its processing.
+    #: :ref:`ETA <celery:calling-eta>` for its processing.
     eta = models.DateTimeField(_('ETA'), null=True)
     #: An optional :class:`~datetime.datetime` describing when the task
     #: :ref:`expires <celery:calling-expiration>`.
