@@ -21,7 +21,6 @@ Contents
     :maxdepth: 1
 
     changelog
-    glossary
 
 Indices and tables
 ==================
