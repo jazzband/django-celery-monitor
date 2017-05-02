@@ -8,4 +8,4 @@ python:
 install: travis_retry pip install -U codecov tox-travis
 script: tox -v -- -v
 after_success:
-  - codecov -e TOXENV
+  - codecov
