@@ -1,16 +1,10 @@
 language: python
 sudo: false
-cache: false
 python:
   - "2.7"
   - "3.4"
   - "3.5"
   - "3.6"
-os:
-    - linux
-env:
-  global:
-    PYTHONUNBUFFERED=yes
 install: travis_retry pip install -U tox-travis
 script: tox -v -- -v
 after_success:
