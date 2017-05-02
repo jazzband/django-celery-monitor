@@ -5,8 +5,7 @@ python:
   - "3.4"
   - "3.5"
   - "3.6"
-install: travis_retry pip install -U tox-travis
+install: travis_retry pip install -U codecov tox-travis
 script: tox -v -- -v
 after_success:
-  - .tox/$TRAVIS_PYTHON_VERSION/bin/coverage xml
-  - .tox/$TRAVIS_PYTHON_VERSION/bin/codecov -e TOXENV
+  - codecov -e TOXENV
