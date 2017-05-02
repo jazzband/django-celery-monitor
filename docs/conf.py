@@ -8,8 +8,8 @@ from sphinx_celery import conf
 globals().update(conf.build_config(
     'django_celery_monitor', __file__,
     project='django_celery_monitor',
-    # version_dev='2.0',
-    # version_stable='1.4',
+    version_dev='1.1.0',
+    version_stable='1.0.0',
     canonical_url='http://django-celery-monitor.readthedocs.io',
     webdomain='',
     github_project='jezdez/django-celery-monitor',
