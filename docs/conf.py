@@ -27,4 +27,5 @@ globals().update(conf.build_config(
         'django_celery_monitor.admin',
         r'django_celery_monitor.migrations.*',
     ],
+    suppress_warnings=['image.nonlocal_uri'],
 ))

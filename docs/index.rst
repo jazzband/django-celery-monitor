@@ -1,8 +1,4 @@
-======================================================
- django-celery-monitor - Celery Monitoring for Django
-======================================================
-
-.. include:: includes/introduction.txt
+.. include:: ../README.rst
 
 Contents
 ========
@@ -21,11 +17,3 @@ Contents
     :maxdepth: 1
 
     changelog
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
-

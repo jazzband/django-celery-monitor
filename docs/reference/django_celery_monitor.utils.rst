@@ -8,4 +8,3 @@
 
 .. automodule:: django_celery_monitor.utils
     :members:
-    :undoc-members:

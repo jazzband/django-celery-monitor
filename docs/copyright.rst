@@ -1,7 +1,7 @@
 Copyright
 =========
 
-*django-celery-monitor User Manual*
+*django_celery_monitor User Manual*
 
 by Ask Solem and Jannis Leidel
 
@@ -13,7 +13,7 @@ Copyright |copy| 2016, Ask Solem
 All rights reserved. This material may be copied or distributed only
 subject to the terms and conditions set forth in the `Creative Commons
 Attribution-ShareAlike 4.0 International
-<http://creativecommons.org/licenses/by-sa/4.0/legalcode>`_ license.
+<https://creativecommons.org/licenses/by-sa/4.0/legalcode>`_ license.
 
 You may share and adapt the material, even for commercial purposes, but
 you must give the original author credit.
@@ -23,7 +23,7 @@ a license compatible to this one.
 
 .. note::
 
-   While the django-celery-monitor *documentation* is offered under the
+   While the django_celery_monitor *documentation* is offered under the
    Creative Commons *Attribution-ShareAlike 4.0 International* license
-   the django-celery-monitor *software* is offered under the
-   `BSD License (3 Clause) <http://www.opensource.org/licenses/BSD-3-Clause>`_
+   the django_celery_monitor *software* is offered under the
+   `BSD License (3 Clause) <https://opensource.org/licenses/BSD-3-Clause>`_

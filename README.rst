@@ -1,14 +1,14 @@
-================================================
- Celery Monitor for the Django admin framework.
-================================================
-
-|build-status| |coverage| |license| |wheel| |pyversion| |pyimp|
+============================
+Celery Monitoring for Django
+============================
 
 :Version: 1.0.0
-:Web: http://django-celery-monitor.readthedocs.io/
-:Download: http://pypi.python.org/pypi/django-celery-monitor
-:Source: http://github.com/jezdez/django-celery-monitor
+:Web: https://django-celery-monitor.readthedocs.io/
+:Download: https://pypi.python.org/pypi/django_celery_monitor
+:Source: https://github.com/jezdez/django-celery-monitor
 :Keywords: django, celery, events, monitoring
+
+|build-status| |coverage| |license| |wheel| |pyversion| |pyimp|
 
 About
 =====
@@ -21,6 +21,95 @@ and you can query this database table like any other Django model.
 It provides a Camera class (``django_celery_monitor.camera.Camera``) to be
 used with the Celery events command line tool to automatically populate the
 two models with the current state of the Celery workers and tasks.
+
+History
+=======
+
+This package is a Celery 4 compatible port of the Django admin based
+monitoring feature that was included in the old
+`django-celery <https://pypi.python.org/pypi/django-celery>`_ package which
+is only compatible with Celery < 4.0.
+Other parts of django-celery were released as
+`django-celery-beat <https://pypi.python.org/pypi/django_celery_beat>`_
+(Database-backed Periodic Tasks) and
+`django-celery-results <https://pypi.python.org/pypi/django_celery_results>`_
+(Celery result backends for Django).
+
+Installation
+============
+
+You can install django-celery-monitor either via the Python Package Index (PyPI)
+or from source.
+
+To install using `pip`,:
+
+.. code-block:: console
+
+    $ pip install -U django-celery-monitor
+
+.. _installing-from-source:
+
+Downloading and installing from source
+--------------------------------------
+
+Download the latest version of django-celery-monitor from
+http://pypi.python.org/pypi/django_celery_monitor
+
+You can install it by doing the following,:
+
+.. code-block:: console
+
+    $ tar xvfz django-celery-monitor-0.0.0.tar.gz
+    $ cd django-celery-monitor-0.0.0
+    $ python setup.py build
+    # python setup.py install
+
+The last command must be executed as a privileged user if
+you are not currently using a virtualenv.
+
+Usage
+=====
+
+To use this with your project you need to follow these steps:
+
+#. Install the django_celery_monitor library:
+
+   .. code-block:: console
+
+      $ pip install django_celery_monitor
+
+#. Add ``django_celery_monitor`` to ``INSTALLED_APPS`` in your
+   Django project's :file:`settings.py`::
+
+    INSTALLED_APPS = (
+        ...,
+        'django_celery_monitor',
+    )
+
+   Note that there is no dash in the module name, only underscores.
+
+#. Create the Celery database tables by performing a database migrations:
+
+   .. code-block:: console
+
+      $ python manage.py migrate django_celery_monitor
+
+Starting the monitoring process
+===============================
+
+To enable taking snapshots of the current state of tasks and workers you'll
+want to run the Celery events command with the appropriate camera class
+``django_celery_monitor.camera.Camera``:
+
+.. code-block:: console
+
+    $ celery -A proj events -l info --camera django_celery_monitor.camera.Camera --frequency=2.0
+
+For a complete listing of the command-line options available see:
+
+.. code-block:: console
+
+    $ celery events --help
 
 Configuration
 =============
@@ -52,35 +141,6 @@ In your Celery configuration simply set them to override the defaults, e.g.::
 
     monitor_task_success_expires = timedelta(days=7)
 
-.. _installation:
-
-Installation
-============
-
-You can install django-celery-monitor either via the Python Package Index (PyPI)
-or from source.
-
-To install using `pip`,::
-
-    $ pip install -U django-celery-monitor
-
-.. _installing-from-source:
-
-Downloading and installing from source
---------------------------------------
-
-Download the latest version of django-celery-monitor from
-http://pypi.python.org/pypi/django-celery-monitor
-
-You can install it by doing the following,::
-
-    $ tar xvfz django-celery-monitor-0.0.0.tar.gz
-    $ cd django-celery-monitor-0.0.0
-    $ python setup.py build
-    # python setup.py install
-
-The last command must be executed as a privileged user if
-you are not currently using a virtualenv.
 
 .. |build-status| image:: https://secure.travis-ci.org/jezdez/django-celery-monitor.svg?branch=master
     :alt: Build status
@@ -95,13 +155,13 @@ you are not currently using a virtualenv.
 
 .. |wheel| image:: https://img.shields.io/pypi/wheel/django-celery-monitor.svg
     :alt: django-celery-monitor can be installed via wheel
-    :target: http://pypi.python.org/pypi/django-celery-monitor/
+    :target: http://pypi.python.org/pypi/django_celery_monitor/
 
 .. |pyversion| image:: https://img.shields.io/pypi/pyversions/django-celery-monitor.svg
     :alt: Supported Python versions.
-    :target: http://pypi.python.org/pypi/django-celery-monitor/
+    :target: http://pypi.python.org/pypi/django_celery_monitor/
 
 .. |pyimp| image:: https://img.shields.io/pypi/implementation/django-celery-monitor.svg
     :alt: Support Python implementations.
-    :target: http://pypi.python.org/pypi/django-celery-monitor/
+    :target: http://pypi.python.org/pypi/django_celery_monitor/
 

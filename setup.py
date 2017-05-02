@@ -146,7 +146,7 @@ setuptools.setup(
     platforms=['any'],
     license='BSD',
     classifiers=classifiers,
-    install_requires=reqs('default.txt') + reqs('django.txt'),
+    install_requires=reqs('default.txt'),
     tests_require=reqs('test.txt'),
     cmdclass={'test': pytest},
     zip_safe=False,
