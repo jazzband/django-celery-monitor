@@ -135,7 +135,7 @@ class pytest(setuptools.command.test.test):
 
 setuptools.setup(
     name=NAME,
-    packages=setuptools.find_packages(exclude=['t', 't.*']),
+    packages=setuptools.find_packages(exclude=['tests', 'tests.*']),
     version=meta['version'],
     description=meta['doc'],
     long_description=long_description,
