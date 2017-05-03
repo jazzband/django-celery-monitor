@@ -16,7 +16,7 @@ globals().update(conf.build_config(
     copyright='2009-2017',
     django_settings='proj.settings',
     include_intersphinx={'python', 'sphinx', 'django', 'celery'},
-    path_additions=[os.path.join(os.pardir, 't')],
+    path_additions=[os.path.join(os.pardir, 'tests')],
     extra_extensions=['sphinx.ext.napoleon'],
     html_logo='images/logo.png',
     html_favicon='images/favicon.ico',
