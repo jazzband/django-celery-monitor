@@ -6,3 +6,6 @@ tox>=2.3.1
 sphinx2rst>=1.0
 bumpversion
 pydocstyle
+docutils
+readme_renderer
+check-manifest
