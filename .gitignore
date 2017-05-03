@@ -21,7 +21,6 @@ Documentation/
 .pydevproject
 .idea/
 .coverage
-celery/tests/cover/
 .ve*
 cover/
 .vagrant/

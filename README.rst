@@ -47,26 +47,6 @@ To install using `pip`,:
 
     $ pip install -U django-celery-monitor
 
-.. _installing-from-source:
-
-Downloading and installing from source
---------------------------------------
-
-Download the latest version of django-celery-monitor from
-http://pypi.python.org/pypi/django_celery_monitor
-
-You can install it by doing the following,:
-
-.. code-block:: console
-
-    $ tar xvfz django-celery-monitor-0.0.0.tar.gz
-    $ cd django-celery-monitor-0.0.0
-    $ python setup.py build
-    # python setup.py install
-
-The last command must be executed as a privileged user if
-you are not currently using a virtualenv.
-
 Usage
 =====
 
@@ -79,7 +59,7 @@ To use this with your project you need to follow these steps:
       $ pip install django_celery_monitor
 
 #. Add ``django_celery_monitor`` to ``INSTALLED_APPS`` in your
-   Django project's :file:`settings.py`::
+   Django project's ``settings.py``::
 
     INSTALLED_APPS = (
         ...,
