@@ -8,7 +8,7 @@
 
 1.0.0
 =====
-:release-date: 2017-05-02 11:25 a.m. UTC+2
+:release-date: 2017-05-03 08:35 a.m. UTC+2
 :release-by: Jannis Leidel
 
 - Initial release by extracting the monitor code from the old django-celery app.
