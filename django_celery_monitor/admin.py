@@ -1,7 +1,8 @@
 """Result Task Admin interface."""
 from __future__ import absolute_import, unicode_literals
 
-from __future__ import absolute_import, unicode_literals
+import ast
+from importlib import import_module
 
 from django.contrib import admin
 from django.contrib.admin import helpers
@@ -31,6 +32,8 @@ TASK_STATE_COLORS = {states.SUCCESS: 'green',
                      'RECEIVED': 'blue'}
 NODE_STATE_COLORS = {'ONLINE': 'green',
                      'OFFLINE': 'gray'}
+
+RETRY_TASK_COUNTDOWN = 10
 
 
 class MonitorList(main_views.ChangeList):
@@ -190,6 +193,25 @@ class TaskMonitor(ModelMonitor):
             for state in queryset:
                 revoke(state.task_id, connection=connection,
                        terminate=True, signal='KILL')
+
+    @action(_('Retry selected tasks'))
+    def retry_tasks(self, request, queryset):
+        with current_app.default_connection() as connection:
+            for state in queryset:
+                module_name, task_name = state.name.rsplit('.', 1)
+                task = getattr(import_module(module_name), task_name, None)
+                if task:
+                    kwargs = {
+                        'args': ast.literal_eval(state.args),
+                        'kwargs': ast.literal_eval(state.kwargs),
+                        'countdown': RETRY_TASK_COUNTDOWN,
+                        'connection': connection
+                    }
+                    try:
+                        task.apply_async(**kwargs)
+                    except TypeError:
+                        # it must be a class task
+                        task().apply_async(**kwargs)
 
     @action(_('Rate limit selected tasks'))
     def rate_limit_tasks(self, request, queryset):
