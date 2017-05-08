@@ -7,5 +7,5 @@ sphinx2rst>=1.0
 bumpversion==0.5.3
 pydocstyle==2.0.0
 docutils==0.13.1
-readme_renderer
+readme-renderer==17.2
 check-manifest
