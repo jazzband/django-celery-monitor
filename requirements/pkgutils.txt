@@ -8,4 +8,4 @@ bumpversion
 pydocstyle
 docutils
 readme_renderer
-check-manifest
+check-manifest==0.35
