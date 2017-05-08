@@ -4,6 +4,13 @@
  Change history
 ================
 
+.. _version-1.0.2:
+
+:release-date: 2017-05-08 15:15 a.m. UTC+2
+:release-by: Jannis Leidel
+
+- Import Django models inline to prevent import time side effect.
+
 .. _version-1.0.1:
 
 :release-date: 2017-05-03 10:17 a.m. UTC+2
