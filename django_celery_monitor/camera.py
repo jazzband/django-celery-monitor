@@ -25,6 +25,7 @@ debug = logger.debug
 
 class Camera(Polaroid):
     """The Celery events Polaroid snapshot camera."""
+
     clear_after = True
     worker_update_freq = WORKER_UPDATE_FREQ
 

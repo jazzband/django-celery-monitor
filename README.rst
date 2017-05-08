@@ -74,6 +74,9 @@ To use this with your project you need to follow these steps:
 
       $ python manage.py migrate django_celery_monitor
 
+#. Go to the Django admin of your site and look for the "Celery Monitor"
+   section.
+
 Starting the monitoring process
 ===============================
 
