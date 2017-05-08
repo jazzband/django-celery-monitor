@@ -6,10 +6,12 @@
 
 .. _version-1.0.2:
 
-:release-date: 2017-05-08 15:15 a.m. UTC+2
+:release-date: 2017-05-08 16:05 a.m. UTC+2
 :release-by: Jannis Leidel
 
 - Import Django models inline to prevent import time side effect.
+
+- Run django.setup() when installing the Camera.
 
 .. _version-1.0.1:
 
