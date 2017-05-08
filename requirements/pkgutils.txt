@@ -4,8 +4,8 @@ flake8>=2.5.4
 flakeplus>=1.1
 tox>=2.3.1
 sphinx2rst>=1.0
-bumpversion
-pydocstyle
-docutils
-readme_renderer
-check-manifest
+bumpversion==0.5.3
+pydocstyle==2.0.0
+docutils==0.13.1
+readme-renderer==17.2
+check-manifest==0.35
