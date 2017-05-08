@@ -1,2 +1,2 @@
 pytest-cov
-codecov
+codecov==2.0.9
