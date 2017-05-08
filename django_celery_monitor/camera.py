@@ -49,6 +49,14 @@ class Camera(Polaroid):
             'monitors_expire_pending': timedelta(days=5),
         })
 
+    def django_setup(self):
+        import django
+        django.setup()
+
+    def install(self):
+        super(Camera, self).install()
+        self.django_setup()
+
     @property
     def expire_task_states(self):
         """Return a twople of Celery task states and expiration timedeltas."""
