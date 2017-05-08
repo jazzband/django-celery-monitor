@@ -8,10 +8,10 @@ from celery import states
 from celery.events.state import Task
 from celery.events.snapshot import Polaroid
 from celery.five import monotonic
+from celery.utils.imports import symbol_by_name
 from celery.utils.log import get_logger
 from celery.utils.time import maybe_iso8601
 
-from .models import WorkerState, TaskState
 from .utils import fromtimestamp, correct_awareness
 
 WORKER_UPDATE_FREQ = 60  # limit worker timestamp write freq.
@@ -24,18 +24,19 @@ debug = logger.debug
 
 
 class Camera(Polaroid):
-    """The Celery events Polaroid snapshot camera.
-
-    Stores task and worker state in the data models
-    ``django_celery_monitor.models.TaskState`` and
-    ``django_celery_monitor.models.WorkerState``.
-    """
-
-    TaskState = TaskState
-    WorkerState = WorkerState
-
+    """The Celery events Polaroid snapshot camera."""
     clear_after = True
     worker_update_freq = WORKER_UPDATE_FREQ
+
+    @property
+    def TaskState(self):
+        """Return the data model to store task state in."""
+        return symbol_by_name('django_celery_monitor.models.TaskState')
+
+    @property
+    def WorkerState(self):
+        """Return the data model to store worker state in."""
+        return symbol_by_name('django_celery_monitor.models.WorkerState')
 
     def __init__(self, *args, **kwargs):
         super(Camera, self).__init__(*args, **kwargs)
