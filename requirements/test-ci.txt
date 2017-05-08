@@ -1,2 +1,2 @@
-pytest-cov
-codecov
+pytest-cov==2.4.0
+codecov==2.0.9
