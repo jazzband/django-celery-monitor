@@ -29,16 +29,6 @@ class Camera(Polaroid):
     clear_after = True
     worker_update_freq = WORKER_UPDATE_FREQ
 
-    @property
-    def TaskState(self):
-        """Return the data model to store task state in."""
-        return symbol_by_name('django_celery_monitor.models.TaskState')
-
-    @property
-    def WorkerState(self):
-        """Return the data model to store worker state in."""
-        return symbol_by_name('django_celery_monitor.models.WorkerState')
-
     def __init__(self, *args, **kwargs):
         super(Camera, self).__init__(*args, **kwargs)
         self._last_worker_write = defaultdict(lambda: (None, None))
@@ -48,6 +38,16 @@ class Camera(Polaroid):
             'monitors_expire_error': timedelta(days=3),
             'monitors_expire_pending': timedelta(days=5),
         })
+
+    @property
+    def TaskState(self):
+        """Return the data model to store task state in."""
+        return symbol_by_name('django_celery_monitor.models.TaskState')
+
+    @property
+    def WorkerState(self):
+        """Return the data model to store worker state in."""
+        return symbol_by_name('django_celery_monitor.models.WorkerState')
 
     def django_setup(self):
         import django
