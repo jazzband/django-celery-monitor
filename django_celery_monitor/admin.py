@@ -16,6 +16,7 @@ from django.utils.translation import ugettext_lazy as _
 from celery import current_app
 from celery import states
 from celery.task.control import broadcast, revoke, rate_limit
+from celery.utils.imports import symbol_by_name
 from celery.utils.text import abbrtask
 
 from .admin_utils import action, display_field, fixedwidth
@@ -198,20 +199,14 @@ class TaskMonitor(ModelMonitor):
     def retry_tasks(self, request, queryset):
         with current_app.default_connection() as connection:
             for state in queryset:
-                module_name, task_name = state.name.rsplit('.', 1)
-                task = getattr(import_module(module_name), task_name, None)
-                if task:
-                    kwargs = {
-                        'args': ast.literal_eval(state.args),
-                        'kwargs': ast.literal_eval(state.kwargs),
-                        'countdown': RETRY_TASK_COUNTDOWN,
-                        'connection': connection
-                    }
-                    try:
-                        task.apply_async(**kwargs)
-                    except TypeError:
-                        # it must be a class task
-                        task().apply_async(**kwargs)
+                task = symbol_by_name(state.name)
+                kwargs = {
+                    'args': ast.literal_eval(state.args),
+                    'kwargs': ast.literal_eval(state.kwargs),
+                    'countdown': RETRY_TASK_COUNTDOWN,
+                    'connection': connection
+                }
+                task.apply_async(**kwargs)
 
     @action(_('Rate limit selected tasks'))
     def rate_limit_tasks(self, request, queryset):
