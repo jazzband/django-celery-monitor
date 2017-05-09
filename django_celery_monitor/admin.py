@@ -2,7 +2,6 @@
 from __future__ import absolute_import, unicode_literals
 
 import ast
-from importlib import import_module
 
 from django.contrib import admin
 from django.contrib.admin import helpers
