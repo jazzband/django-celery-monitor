@@ -98,14 +98,13 @@ class TaskStateQuerySet(ExtendedQuerySet):
             )
             if created:
                 return obj
+
+            if states.state(state) < states.state(obj.state):
+                keep = Task.merge_rules[states.RECEIVED]
             else:
-                if states.state(state) < states.state(obj.state):
-                    keep = Task.merge_rules[states.RECEIVED]
-                    defaults = dict(
-                        (k, v) for k, v in defaults.items()
-                        if k not in keep
-                    )
-                for k, v in defaults.items():
-                    setattr(obj, k, v)
-                obj.save()
-                return obj
+                keep = {}
+            for key, value in defaults.items():
+                if key not in keep:
+                    setattr(obj, key, value)
+            obj.save(update_fields=tuple(defaults.keys()))
+            return obj
