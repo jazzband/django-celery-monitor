@@ -7,7 +7,7 @@ from celery.events.state import Task
 from celery.utils.time import maybe_timedelta
 from django.db import connections, models, router, transaction
 
-from .compat import Now
+from .utils import Now
 
 
 class ExtendedQuerySet(models.QuerySet):
@@ -18,7 +18,8 @@ class ExtendedQuerySet(models.QuerySet):
         return connections[router.db_for_write(self.model)]
 
     def select_for_update_or_create(self, defaults=None, **kwargs):
-        """
+        """Extend update_or_create with select_for_update.
+
         Look up an object with the given kwargs, updating one with defaults
         if it exists, otherwise create a new one.
         Return a tuple (object, created), where created is a boolean

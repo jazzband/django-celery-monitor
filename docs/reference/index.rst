@@ -10,7 +10,6 @@
 .. toctree::
     :maxdepth: 1
 
-    django_celery_monitor.admin_utils
     django_celery_monitor.camera
     django_celery_monitor.humanize
     django_celery_monitor.managers
