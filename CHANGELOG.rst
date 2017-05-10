@@ -4,6 +4,20 @@
  Change history
 ================
 
+.. _version-1.1.0:
+
+:release-date: 2017-05-10 12:05 p.m. UTC+2
+:release-by: Jannis Leidel
+
+- Use ``SELECT FOR UPDATE`` SQL statements for updating the task and worker
+  states to improve resilliance against race conditions by multiple
+  simultaneously running cameras.
+
+- Move worker state cache from in-process dictionary into database side
+  timestamp to decide whether to do another worker update or not.
+
+- Improved code structure by moving all utilities into same module.
+
 .. _version-1.0.2:
 
 :release-date: 2017-05-08 16:05 a.m. UTC+2
