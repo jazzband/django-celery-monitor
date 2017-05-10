@@ -5,17 +5,13 @@ from datetime import timedelta
 from celery import states
 from celery.events.state import Task
 from celery.utils.time import maybe_timedelta
-from django.db import connections, models, router, transaction
+from django.db import models, router, transaction
 
 from .utils import Now
 
 
 class ExtendedQuerySet(models.QuerySet):
     """A custom model manager that implements a few helpful methods."""
-
-    def connection_for_write(self):
-        """Return the database connection that is configured for writing."""
-        return connections[router.db_for_write(self.model)]
 
     def select_for_update_or_create(self, defaults=None, **kwargs):
         """Extend update_or_create with select_for_update.
@@ -89,13 +85,10 @@ class TaskStateQuerySet(ExtendedQuerySet):
 
     def purge(self):
         """Purge all expired task states."""
-        meta = self.model._meta
         with transaction.atomic():
-            cursor = self.connection_for_write().cursor()
-            cursor.execute(
-                'DELETE FROM {0.db_table} WHERE hidden=%s'.format(meta),
-                (True, ),
-            )
+            self.using(
+                router.db_for_write(self.model)
+            ).filter(hidden=True).delete()
 
     def update_state(self, state, task_id, defaults):
         with transaction.atomic():
