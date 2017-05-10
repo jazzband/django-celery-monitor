@@ -11,7 +11,7 @@ from .utils import Now
 
 
 class ExtendedQuerySet(models.QuerySet):
-    """A custom model manager that implements a few helpful methods."""
+    """A custom model queryset that implements a few helpful methods."""
 
     def select_for_update_or_create(self, defaults=None, **kwargs):
         """Extend update_or_create with select_for_update.
@@ -42,7 +42,7 @@ class ExtendedQuerySet(models.QuerySet):
 
 
 class WorkerStateQuerySet(ExtendedQuerySet):
-    """A custom model manager for the WorkerState model with some helpers."""
+    """A custom model queryset for the WorkerState model with some helpers."""
 
     def update_heartbeat(self, hostname, heartbeat, update_freq):
         with transaction.atomic():
@@ -65,7 +65,7 @@ class WorkerStateQuerySet(ExtendedQuerySet):
 
 
 class TaskStateQuerySet(ExtendedQuerySet):
-    """A custom model manager for the TaskState model with some helpers."""
+    """A custom model queryset for the TaskState model with some helpers."""
 
     def active(self):
         """Return all active task states."""
