@@ -1,18 +1,71 @@
 """The model managers."""
 from __future__ import absolute_import, unicode_literals
+from datetime import timedelta
 
+from celery import states
+from celery.events.state import Task
 from celery.utils.time import maybe_timedelta
 from django.db import connections, models, router, transaction
-from django.utils import timezone
+
+from .compat import Now
 
 
-
-class TaskStateManager(models.Manager):
-    """A custom models manager for the TaskState model with some helpers."""
+class ExtendedQuerySet(models.QuerySet):
+    """A custom model manager that implements a few helpful methods."""
 
     def connection_for_write(self):
         """Return the database connection that is configured for writing."""
         return connections[router.db_for_write(self.model)]
+
+    def select_for_update_or_create(self, defaults=None, **kwargs):
+        """
+        Look up an object with the given kwargs, updating one with defaults
+        if it exists, otherwise create a new one.
+        Return a tuple (object, created), where created is a boolean
+        specifying whether an object was created.
+
+        This is a backport from Django 1.11
+        (https://code.djangoproject.com/ticket/26804) to support
+        select_for_update when getting the object.
+        """
+        defaults = defaults or {}
+        lookup, params = self._extract_model_params(defaults, **kwargs)
+        self._for_write = True
+        with transaction.atomic(using=self.db):
+            try:
+                obj = self.select_for_update().get(**lookup)
+            except self.model.DoesNotExist:
+                obj, created = self._create_object_from_params(lookup, params)
+                if created:
+                    return obj, created
+            for k, v in defaults.items():
+                setattr(obj, k, v() if callable(v) else v)
+            obj.save(using=self.db)
+        return obj, False
+
+
+class WorkerStateQuerySet(ExtendedQuerySet):
+    """A custom model manager for the WorkerState model with some helpers."""
+
+    def update_heartbeat(self, hostname, heartbeat, update_freq):
+        with transaction.atomic():
+            interval = Now() - timedelta(seconds=update_freq)
+            recent_worker_updates = self.filter(
+                hostname=hostname,
+                last_update__gte=interval,
+            )
+            if recent_worker_updates.exists():
+                obj = recent_worker_updates.latest()
+            else:
+                obj, _ = self.select_for_update_or_create(
+                    hostname=hostname,
+                    defaults={'last_heartbeat': heartbeat},
+                )
+        return obj
+
+
+class TaskStateQuerySet(ExtendedQuerySet):
+    """A custom model manager for the TaskState model with some helpers."""
 
     def active(self):
         """Return all active task states."""
@@ -22,7 +75,7 @@ class TaskStateManager(models.Manager):
         """Return all expired task states."""
         return self.filter(
             state__in=states,
-            tstamp__lte=timezone.now() - maybe_timedelta(expires),
+            tstamp__lte=Now() - maybe_timedelta(expires),
         )
 
     def expire_by_states(self, states, expires):
@@ -39,3 +92,23 @@ class TaskStateManager(models.Manager):
                 'DELETE FROM {0.db_table} WHERE hidden=%s'.format(meta),
                 (True, ),
             )
+
+    def update_state(self, state, task_id, defaults):
+        with transaction.atomic():
+            obj, created = self.select_for_update_or_create(
+                task_id=task_id,
+                defaults=defaults,
+            )
+            if created:
+                return obj
+            else:
+                if states.state(state) < states.state(obj.state):
+                    keep = Task.merge_rules[states.RECEIVED]
+                    defaults = dict(
+                        (k, v) for k, v in defaults.items()
+                        if k not in keep
+                    )
+                for k, v in defaults.items():
+                    setattr(obj, k, v)
+                obj.save()
+                return obj

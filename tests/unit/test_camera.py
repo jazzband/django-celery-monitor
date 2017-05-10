@@ -1,6 +1,6 @@
 from __future__ import absolute_import, unicode_literals
 
-from datetime import datetime
+from datetime import datetime, timedelta
 from itertools import count
 from time import time
 
@@ -69,11 +69,14 @@ class test_Camera:
     def test_handle_worker(self):
         worker = Worker(hostname='fuzzie')
         worker.event('online', time(), time(), {})
-        self.cam._last_worker_write.clear()
+        old_last_update = timezone.now() - timedelta(hours=1)
+        models.WorkerState.objects.all().update(last_update=old_last_update)
+
         m = self.cam.handle_worker((worker.hostname, worker))
         assert m
         assert m.hostname
         assert m.last_heartbeat
+        assert m.last_update != old_last_update
         assert m.is_alive()
         assert str(m) == str(m.hostname)
         assert repr(m)
@@ -237,7 +240,10 @@ class test_Camera:
                         hostname=ws[1]),
                   Event('worker-offline', hostname=ws[0])]
         list(map(state.event, events))
-        cam._last_worker_write.clear()
+        # reset the date the last update was done
+        models.WorkerState.objects.all().update(
+            last_update=timezone.now() - timedelta(hours=1)
+        )
         cam.on_shutter(state)
 
         w1 = models.WorkerState.objects.get(hostname=ws[0])

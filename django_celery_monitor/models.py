@@ -26,10 +26,11 @@ class WorkerState(models.Model):
     #: A :class:`~datetime.datetime` describing when the worker was last seen.
     last_heartbeat = models.DateTimeField(_('last heartbeat'), null=True,
                                           db_index=True)
+    last_update = models.DateTimeField(_('last update'), auto_now=True)
 
-    #: A :class:`~django.db.models.Manager` instance
+    #: A :class:`~django_celery_monitor.managers.ExtendedManager` instance
     #: to query the :class:`~django_celery_monitor.models.WorkerState` model.
-    objects = models.Manager()
+    objects = managers.WorkerStateQuerySet.as_manager()
 
     class Meta:
         """Model meta-data."""
@@ -106,7 +107,7 @@ class TaskState(models.Model):
 
     #: A :class:`~django_celery_monitor.managers.TaskStateManager` instance
     #: to query the :class:`~django_celery_monitor.models.TaskState` model.
-    objects = managers.TaskStateManager()
+    objects = managers.TaskStateQuerySet.as_manager()
 
     class Meta:
         """Model meta-data."""

@@ -1,13 +1,10 @@
 """The Celery events camera."""
 from __future__ import absolute_import, unicode_literals
 
-from collections import defaultdict
 from datetime import timedelta
 
 from celery import states
-from celery.events.state import Task
 from celery.events.snapshot import Polaroid
-from celery.five import monotonic
 from celery.utils.imports import symbol_by_name
 from celery.utils.log import get_logger
 from celery.utils.time import maybe_iso8601
@@ -31,7 +28,6 @@ class Camera(Polaroid):
 
     def __init__(self, *args, **kwargs):
         super(Camera, self).__init__(*args, **kwargs)
-        self._last_worker_write = defaultdict(lambda: (None, None))
         # Expiry can be timedelta or None for never expire.
         self.app.add_defaults({
             'monitors_expire_success': timedelta(days=1),
@@ -74,16 +70,13 @@ class Camera(Polaroid):
         return fromtimestamp(heartbeat)
 
     def handle_worker(self, hostname_worker):
-        (hostname, worker) = hostname_worker
-        last_write, obj = self._last_worker_write[hostname]
-        if (not last_write or
-                monotonic() - last_write > self.worker_update_freq):
-            obj, _ = self.WorkerState.objects.update_or_create(
-                hostname=hostname,
-                defaults={'last_heartbeat': self.get_heartbeat(worker)},
-            )
-            self._last_worker_write[hostname] = (monotonic(), obj)
-        return obj
+        hostname, worker = hostname_worker
+        # was there an update in the last n seconds?
+        return self.WorkerState.objects.update_heartbeat(
+            hostname,
+            heartbeat=self.get_heartbeat(worker),
+            update_freq=self.worker_update_freq,
+        )
 
     def handle_task(self, uuid_task, worker=None):
         """Handle snapshotted event."""
@@ -113,29 +106,17 @@ class Camera(Polaroid):
          if defaults[attr] is None]
         return self.update_task(task.state, task_id=uuid, defaults=defaults)
 
-    def update_task(self, state, **kwargs):
-        objects = self.TaskState.objects
-        defaults = kwargs.pop('defaults', None) or {}
+    def update_task(self, state, task_id, defaults=None):
+        defaults = defaults or {}
         if not defaults.get('name'):
             return
-        obj, created = objects.get_or_create(defaults=defaults, **kwargs)
-        if created:
-            return obj
-        else:
-            if states.state(state) < states.state(obj.state):
-                keep = Task.merge_rules[states.RECEIVED]
-                defaults = dict(
-                    (k, v) for k, v in defaults.items()
-                    if k not in keep
-                )
+        return self.TaskState.objects.update_state(
+            state=state,
+            task_id=task_id,
+            defaults=defaults,
+        )
 
-        for k, v in defaults.items():
-            setattr(obj, k, v)
-        obj.save()
-
-        return obj
-
-    def on_shutter(self, state, commit_every=100):
+    def on_shutter(self, state):
 
         def _handle_tasks():
             for i, task in enumerate(state.tasks.items()):
@@ -146,8 +127,10 @@ class Camera(Polaroid):
         _handle_tasks()
 
     def on_cleanup(self):
-        expired = (self.TaskState.objects.expire_by_states(states, expires)
-                   for states, expires in self.expire_task_states)
+        expired = (
+            self.TaskState.objects.expire_by_states(states, expires)
+            for states, expires in self.expire_task_states
+        )
         dirty = sum(item for item in expired if item is not None)
         if dirty:
             debug('Cleanup: Marked %s objects as dirty.', dirty)
