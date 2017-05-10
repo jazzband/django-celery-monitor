@@ -15,7 +15,7 @@ from django.test.utils import override_settings
 from django.utils import timezone
 
 from django_celery_monitor import camera, models
-from django_celery_monitor.utils import make_aware, now
+from django_celery_monitor.utils import make_aware
 
 
 _ids = count(0)
@@ -90,7 +90,7 @@ class test_Camera:
         assert mt.name == task.name
         assert str(mt)
         assert repr(mt)
-        mt.eta = now()
+        mt.eta = timezone.now()
         assert 'eta' in str(mt)
         assert mt in models.TaskState.objects.active()
 
