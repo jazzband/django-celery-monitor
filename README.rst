@@ -38,14 +38,14 @@ Other parts of django-celery were released as
 Installation
 ============
 
-You can install django-celery-monitor either via the Python Package Index (PyPI)
+You can install django_celery_monitor either via the Python Package Index (PyPI)
 or from source.
 
 To install using `pip`,:
 
 .. code-block:: console
 
-    $ pip install -U django-celery-monitor
+    $ pip install -U django_celery_monitor
 
 Usage
 =====
