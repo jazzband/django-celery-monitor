@@ -50,14 +50,17 @@ class WorkerStateQuerySet(ExtendedQuerySet):
 
     def update_heartbeat(self, hostname, heartbeat, update_freq):
         with transaction.atomic():
+            # check if there was an update in the last n seconds?
             interval = Now() - timedelta(seconds=update_freq)
             recent_worker_updates = self.filter(
                 hostname=hostname,
                 last_update__gte=interval,
             )
             if recent_worker_updates.exists():
-                obj = recent_worker_updates.latest()
+                # if yes, get the latest update and move on
+                obj = recent_worker_updates.get()
             else:
+                # if no, update the worker state and move on
                 obj, _ = self.select_for_update_or_create(
                     hostname=hostname,
                     defaults={'last_heartbeat': heartbeat},

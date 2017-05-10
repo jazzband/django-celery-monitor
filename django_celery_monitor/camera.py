@@ -71,7 +71,6 @@ class Camera(Polaroid):
 
     def handle_worker(self, hostname_worker):
         hostname, worker = hostname_worker
-        # was there an update in the last n seconds?
         return self.WorkerState.objects.update_heartbeat(
             hostname,
             heartbeat=self.get_heartbeat(worker),
