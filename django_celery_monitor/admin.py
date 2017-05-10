@@ -17,10 +17,9 @@ from celery import states
 from celery.task.control import broadcast, revoke, rate_limit
 from celery.utils.text import abbrtask
 
-from .admin_utils import action, display_field, fixedwidth
 from .models import TaskState, WorkerState
 from .humanize import naturaldate
-from .utils import make_aware
+from .utils import action, display_field, fixedwidth, make_aware
 
 
 TASK_STATE_COLORS = {states.SUCCESS: 'green',
