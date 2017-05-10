@@ -3,8 +3,8 @@ from __future__ import absolute_import, unicode_literals
 
 from celery.utils.time import maybe_timedelta
 from django.db import connections, models, router, transaction
+from django.utils import timezone
 
-from .utils import now
 
 
 class TaskStateManager(models.Manager):
@@ -18,10 +18,12 @@ class TaskStateManager(models.Manager):
         """Return all active task states."""
         return self.filter(hidden=False)
 
-    def expired(self, states, expires, nowfun=now):
+    def expired(self, states, expires):
         """Return all expired task states."""
-        return self.filter(state__in=states,
-                           tstamp__lte=nowfun() - maybe_timedelta(expires))
+        return self.filter(
+            state__in=states,
+            tstamp__lte=timezone.now() - maybe_timedelta(expires),
+        )
 
     def expire_by_states(self, states, expires):
         """Expire task with one of the given states."""

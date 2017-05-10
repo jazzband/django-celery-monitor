@@ -4,7 +4,7 @@ from __future__ import absolute_import, unicode_literals
 from datetime import datetime
 
 from django.utils.translation import ungettext, ugettext as _
-from .utils import now
+from django.utils.timezone import now
 
 
 def pluralize_year(n):
