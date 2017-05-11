@@ -6,7 +6,7 @@
 
 .. _version-1.1.0:
 
-:release-date: 2017-05-10 12:05 p.m. UTC+2
+:release-date: 2017-05-11 10:25 p.m. UTC+2
 :release-by: Jannis Leidel
 
 - Use ``SELECT FOR UPDATE`` SQL statements for updating the task and worker
