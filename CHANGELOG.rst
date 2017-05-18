@@ -4,6 +4,13 @@
  Change history
 ================
 
+.. _version-1.1.1:
+
+:release-date: 2017-05-18 10:30 a.m. UTC+2
+:release-by: Jannis Leidel
+
+- Fix the folder that the extra stylesheet file was stored in.
+
 .. _version-1.1.0:
 
 :release-date: 2017-05-11 10:25 p.m. UTC+2
