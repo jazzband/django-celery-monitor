@@ -150,5 +150,5 @@ setuptools.setup(
     tests_require=reqs('test.txt'),
     cmdclass={'test': pytest},
     zip_safe=False,
-    include_package_data=False,
+    include_package_data=True,
 )
