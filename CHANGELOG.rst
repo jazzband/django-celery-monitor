@@ -4,6 +4,13 @@
  Change history
 ================
 
+.. _version-1.1.2:
+
+:release-date: 2017-05-18 11:30 a.m. UTC+2
+:release-by: Jannis Leidel
+
+- More packaging fixes. Sigh.
+
 .. _version-1.1.1:
 
 :release-date: 2017-05-18 10:30 a.m. UTC+2
