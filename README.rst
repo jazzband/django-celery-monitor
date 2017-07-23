@@ -72,7 +72,7 @@ To use this with your project you need to follow these steps:
 
    .. code-block:: console
 
-      $ python manage.py migrate django_celery_monitor
+      $ python manage.py migrate celery_monitor
 
 #. Go to the Django admin of your site and look for the "Celery Monitor"
    section.
