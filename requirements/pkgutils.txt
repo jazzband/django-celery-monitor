@@ -5,7 +5,7 @@ flakeplus>=1.1
 tox>=2.3.1
 sphinx2rst>=1.0
 bumpversion==0.5.3
-pydocstyle==2.0.0
+pydocstyle==2.1.0
 docutils==0.13.1
 readme-renderer==17.2
 check-manifest==0.35
