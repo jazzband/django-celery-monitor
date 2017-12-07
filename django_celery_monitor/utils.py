@@ -110,5 +110,5 @@ def fixedwidth(field, name=None, pt=6, width=16, maxlen=64, pretty=False):
             pt,
             shortval
         )
-        return styled.replace('|br/|', '<br/>')
+        return format_html(styled.replace('|br/|', '<br/>'))
     return f
