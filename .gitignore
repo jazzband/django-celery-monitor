@@ -28,4 +28,5 @@ cover/
 .cache/
 htmlcov/
 coverage.xml
-env/*
+env/
+.vscode/

@@ -48,7 +48,7 @@ def colored_state(task):
     """
     state = escape(task.state)
     color = TASK_STATE_COLORS.get(task.state, 'black')
-    return format_html('<b><span style="color: {0};">{1}</span></b>'.format(color, state))
+    return format_html('<b><span style="color: {0};">{1}</span></b>', color, state)
 
 
 @display_field(_('state'), 'last_heartbeat')
@@ -59,7 +59,7 @@ def node_state(node):
     """
     state = node.is_alive() and 'ONLINE' or 'OFFLINE'
     color = NODE_STATE_COLORS[state]
-    return format_html('<b><span style="color: {0};">{1}</span></b>'.format(color, state))
+    return format_html('<b><span style="color: {0};">{1}</span></b>', color, state)
 
 
 @display_field(_('ETA'), 'eta')
@@ -78,18 +78,20 @@ def tstamp(task):
     it as a "natural date" -- a human readable version.
     """
     value = make_aware(task.tstamp)
-    return format_html('<div title="{0}">{1}</div>'.format(
-        escape(str(value)), escape(naturaldate(value)),
-    ))
+    return format_html('<div title="{0}">{1}</div>',
+        str(value),
+        naturaldate(value)
+    )
 
 
 @display_field(_('name'), 'name')
 def name(task):
     """Return the task name and abbreviates it to maximum of 16 characters."""
     short_name = abbrtask(task.name, 16)
-    return format_html('<div title="{0}"><b>{1}</b></div>'.format(
-        escape(task.name), escape(short_name),
-    ))
+    return format_html('<div title="{0}"><b>{1}</b></div>',
+        task.name,
+        short_name,
+    )
 
 
 class ModelMonitor(admin.ModelAdmin):
