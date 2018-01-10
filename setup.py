@@ -73,6 +73,7 @@ def add_default(m):
 def add_doc(m):
     return (('doc', m.groups()[0]),)
 
+
 pats = {re_meta: add_default,
         re_doc: add_doc}
 here = os.path.abspath(os.path.dirname(__file__))
@@ -110,6 +111,7 @@ def _reqs(*f):
 
 def reqs(*f):
     return [req for subreq in _reqs(*f) for req in subreq]
+
 
 # -*- Long Description -*-
 
