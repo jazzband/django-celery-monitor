@@ -9,7 +9,7 @@ from pprint import pformat
 from django.conf import settings
 from django.db.models import DateTimeField, Func
 from django.utils import timezone
-from django.utils.html import escape, mark_safe, format_html
+from django.utils.html import mark_safe, format_html
 
 try:
     from django.db.models.functions import Now
