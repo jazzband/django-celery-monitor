@@ -105,5 +105,6 @@ def fixedwidth(field, name=None, pt=6, width=16, maxlen=64, pretty=False):
 
         if len(shortval) > maxlen:
             shortval = shortval[:maxlen] + '...'
-        return format_html(FIXEDWIDTH_STYLE, val[:255], pt, mark_safe(shortval))
+        return format_html(FIXEDWIDTH_STYLE, val[:255], pt,
+                           mark_safe(shortval))
     return f
