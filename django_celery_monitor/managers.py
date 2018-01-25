@@ -6,6 +6,7 @@ from celery import states
 from celery.events.state import Task
 from celery.utils.time import maybe_timedelta
 from django.db import models, router, transaction
+from django.utils import timezone
 
 from .utils import Now
 
@@ -47,7 +48,7 @@ class WorkerStateQuerySet(ExtendedQuerySet):
     def update_heartbeat(self, hostname, heartbeat, update_freq):
         with transaction.atomic():
             # check if there was an update in the last n seconds?
-            interval = Now() - timedelta(seconds=update_freq)
+            interval = timezone.now() - timedelta(seconds=update_freq)
             recent_worker_updates = self.filter(
                 hostname=hostname,
                 last_update__gte=interval,
