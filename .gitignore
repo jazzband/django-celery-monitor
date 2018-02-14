@@ -28,3 +28,4 @@ cover/
 .cache/
 htmlcov/
 coverage.xml
+/.pytest_cache
