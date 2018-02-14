@@ -15,7 +15,6 @@ from django.utils.translation import ugettext_lazy as _
 from celery import current_app
 from celery import states
 from celery.task.control import broadcast, revoke, rate_limit
-from celery.utils.text import abbrtask
 
 from .models import TaskState, WorkerState
 from .humanize import naturaldate
@@ -87,7 +86,9 @@ def tstamp(task):
 @display_field(_('name'), 'name')
 def name(task):
     """Return the task name and abbreviates it to maximum of 16 characters."""
-    short_name = abbrtask(task.name, 16)
+    short_name = task.name
+    if task.name and len(task.name) > 16:
+        short_name = format_html('{0}&hellip;', task.name[0:15])
     return format_html('<div title="{0}"><b>{1}</b></div>', task.name,
                        short_name)
 
