@@ -9,7 +9,8 @@ from pprint import pformat
 from django.conf import settings
 from django.db.models import DateTimeField, Func
 from django.utils import timezone
-from django.utils.html import mark_safe, format_html
+from django.utils.html import format_html
+from six import string_types
 
 try:
     from django.db.models.functions import Now
@@ -92,11 +93,17 @@ def action(short_description, **kwargs):
 
 
 def fixedwidth(field, name=None, pt=6, width=16, maxlen=64, pretty=False):
-    """Render a field with a fixed width."""
+    """Render a field with a fixed width.
+
+    :param bool pretty:
+        For field values that are not a string, use pretty printing if True.
+    """
     @display_field(name or field, field)
     def f(task):
         val = getattr(task, field)
-        if pretty:
+
+        # Pretty printing only makes sense for things that aren't strings
+        if not isinstance(val, string_types) and pretty:
             val = pformat(val, width=width)
         if val.startswith("u'") or val.startswith('u"'):
             val = val[2:-1]
@@ -105,6 +112,5 @@ def fixedwidth(field, name=None, pt=6, width=16, maxlen=64, pretty=False):
 
         if len(shortval) > maxlen:
             shortval = shortval[:maxlen] + '...'
-        return format_html(FIXEDWIDTH_STYLE, val[:255], pt,
-                           mark_safe(shortval))
+        return format_html(FIXEDWIDTH_STYLE, val[:255], pt, shortval)
     return f
