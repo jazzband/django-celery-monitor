@@ -8,4 +8,4 @@ bumpversion==0.5.3
 pydocstyle==2.0.0
 docutils==0.14
 readme-renderer==17.2
-check-manifest==0.36
+check-manifest==0.37
