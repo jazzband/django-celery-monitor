@@ -1,0 +1,20 @@
+[Unit]
+Description=Celery Camera Service
+After=network.target
+
+[Service]
+Type=simple
+User=celery
+Group=celery
+EnvironmentFile=/etc/sysconfig/celerycam
+WorkingDirectory=/opt/celery
+ExecStart=/bin/sh -c '${CELERY_BIN} events -A ${CELERY_APP} \
+    --workdir=${CELERYCAM_CHDIR} \
+    --pidfile=${CELERYCAM_PID_FILE} \
+    --logfile=${CELERYCAM_LOG_FILE} \
+    --loglevel=${CELERYCAM_LOG_LEVEL} \
+    ${CELERYCAM_OPTS}'
+ExecStop=/bin/systemctl kill celerycam.service
+
+[Install]
+WantedBy=multi-user.target

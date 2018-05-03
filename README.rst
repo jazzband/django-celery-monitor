@@ -94,6 +94,21 @@ For a complete listing of the command-line options available see:
 
     $ celery events --help
 
+If you would like to use ``systemd`` to run the process, there are example
+configuration files available under the ``extra/systemd/`` folder. After placing
+the ``celerycam.conf`` under ``/etc/``, and ``celerycam.service`` under
+``/etc/systemd/system/``, you will be able to use the ``systemctl`` command to
+control the daemon. For example:
+
+.. code-block:: console
+
+    $ systemctl start celerycam
+
+.. code-block:: console
+
+    $ systemctl stop celerycam
+
+
 Configuration
 =============
 
@@ -147,4 +162,3 @@ In your Celery configuration simply set them to override the defaults, e.g.::
 .. |pyimp| image:: https://img.shields.io/pypi/implementation/django-celery-monitor.svg
     :alt: Support Python implementations.
     :target: http://pypi.python.org/pypi/django_celery_monitor/
-
