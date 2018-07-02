@@ -96,7 +96,7 @@ For a complete listing of the command-line options available see:
 
 If you would like to use ``systemd`` to run the process, there are example
 configuration files available under the ``extra/systemd/`` folder. After placing
-the ``celerycam.conf`` under ``/etc/``, and ``celerycam.service`` under
+the ``celerycam.conf`` under ``/etc/sysconfig/``, and ``celerycam.service`` under
 ``/etc/systemd/system/``, you will be able to use the ``systemctl`` command to
 control the daemon. For example:
 
