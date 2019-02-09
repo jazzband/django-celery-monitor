@@ -10,6 +10,7 @@ from django.conf import settings
 from django.db.models import DateTimeField, Func
 from django.utils import timezone
 from django.utils.html import escape
+from django.utils.safestring import mark_safe
 
 try:
     from django.db.models.functions import Now
@@ -108,5 +109,5 @@ def fixedwidth(field, name=None, pt=6, width=16, maxlen=64, pretty=False):
         styled = FIXEDWIDTH_STYLE.format(
             escape(val[:255]), pt, escape(shortval),
         )
-        return styled.replace('|br/|', '<br/>')
+        return mark_safe(styled.replace('|br/|', '<br/>'))
     return f
