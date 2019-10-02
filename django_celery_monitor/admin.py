@@ -17,7 +17,7 @@ except ImportError:
     def mark_safe(func):
         def wrapper():
             func()
-    return wrapper
+        return wrapper
 
 
 from django.utils.translation import ugettext_lazy as _
