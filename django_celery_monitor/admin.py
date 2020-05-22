@@ -1,13 +1,10 @@
 """Result Task Admin interface."""
 from __future__ import absolute_import, unicode_literals
 
-from __future__ import absolute_import, unicode_literals
-
 from django.contrib import admin
 from django.contrib.admin import helpers
 from django.contrib.admin.views import main as main_views
-from django.shortcuts import render_to_response
-from django.template import RequestContext
+from django.shortcuts import render
 from django.utils.encoding import force_text
 from django.utils.html import escape
 from django.utils.translation import ugettext_lazy as _
@@ -211,10 +208,7 @@ class TaskMonitor(ModelMonitor):
             'app_label': app_label,
         }
 
-        return render_to_response(
-            self.rate_limit_confirmation_template, context,
-            context_instance=RequestContext(request),
-        )
+        return render(request, self.rate_limit_confirmation_template, context)
 
     def get_actions(self, request):
         actions = super(TaskMonitor, self).get_actions(request)
