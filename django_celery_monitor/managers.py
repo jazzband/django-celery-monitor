@@ -5,6 +5,7 @@ from datetime import timedelta
 from celery import states
 from celery.events.state import Task
 from celery.utils.time import maybe_timedelta
+import django
 from django.db import models, router, transaction
 
 from .utils import Now
@@ -20,13 +21,37 @@ class ExtendedQuerySet(models.QuerySet):
         if it exists, otherwise create a new one.
         Return a tuple (object, created), where created is a boolean
         specifying whether an object was created.
+        """
+        defaults = defaults or {}
+        if django.VERSION < (2, 2):
+            return self._compat(defaults, **kwargs)
+
+        with transaction.atomic(using=self.db):
+            try:
+                obj = self.select_for_update().get(**kwargs)
+            except self.model.DoesNotExist:
+                params = self._extract_model_params(defaults, **kwargs)
+                # Lock the row so that a concurent update is blocked until
+                # after update_or_create() has performed its save.
+                obj, created = self._create_object_from_params(
+                    kwargs, params, lock=True
+                )
+                if created:
+                    return obj, created
+            for k, v in defaults.items():
+                setattr(obj, k, v() if callable(v) else v)
+            obj.save(using=self.db)
+        return obj, False
+
+    def _compat(self, defaults=None, **kwargs):
+        """Django 1 compatibility.
 
         This is a backport from Django 1.11
         (https://code.djangoproject.com/ticket/26804) to support
         select_for_update when getting the object.
         """
-        defaults = defaults or {}
         lookup, params = self._extract_model_params(defaults, **kwargs)
+
         self._for_write = True
         with transaction.atomic(using=self.db):
             try:

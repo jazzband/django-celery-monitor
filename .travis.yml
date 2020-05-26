@@ -2,20 +2,8 @@ language: python
 sudo: false
 python:
 - '2.7'
-- '3.4'
-- '3.5'
 - '3.6'
 install: travis_retry pip install -U codecov tox-travis
-script: tox -v --travis-after -- -v
+script: tox -v
 after_success:
 - codecov
-deploy:
-  provider: pypi
-  user: jezdez
-  password:
-    secure: IyvYrWsNRfmKH5Ib8B6M/F/+EFadWG1z3qs0l5nFAYAx5LqZuL0esLPMLOxgigfN5Ii8Ne1FnJ3KDV8B/i8V6ApBJgiE+0yeP/ExQZ/WQ2ug/CcvxgIFhRN79WzwpWTqRvuYRlxGnA1cp+VLFAweC4dqzXLIzMFQw9uN8h/1uOszc9VsW4asq7/pMFutB0hYMjjZV2RrEARuCVsw93hROB/beGTAmfUOURoVv7zZ1HkcU6fUHDOU10ip7kNxNPVfXk7Z/HOyMti9Hgg6ZGTd7afCN1XBCPj+9nHbOghiEQ8RlaqN9EnoaUfC6H540QuIZISO8aEHxQqzpx8yWNScf/8ZZq3LsBCL6EtzuRWg9HdbZ7DkdezTUHXt8Rnk5ehF8H/bv43ZawTxXxBLTOsH9+ffj98BtpWWAdwEarRLTe61unw62AL7FmCzrfK1amsP74TdlZqTpJTq3Lgb3n31BxC4y4ONhjvlSKxX/z5PO/S9fb94R1v1kAMGeJcB6xtoxNjvfOov3KuRrWdDW+DL8k5tatJSBVyMJMHaOoLFxgmxZG71QZjX6v9UUKXjXD2nwTq9Z8A1aAjQibPMQXRqNErg9uax5h9B1ugWsjp+zeiYYlsQyCCib4h17beVgxVuEiwaDhN0nuaRJKVWWWoDNgwsNF8v5uJTyZNDCk7wFK0=
-  on:
-    tags: true
-    repo: jezdez/django-celery-monitor
-    python: 3.5
-  distributions: sdist bdist_wheel
