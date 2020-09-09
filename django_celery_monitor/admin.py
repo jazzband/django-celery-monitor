@@ -10,7 +10,6 @@ from django.utils.encoding import force_text
 from django.utils.html import escape
 from django.utils.translation import ugettext_lazy as _
 
-from celery import current_app
 from celery import states
 from celery.task.control import broadcast, revoke, rate_limit
 from celery.utils.imports import symbol_by_name
@@ -174,35 +173,29 @@ class TaskMonitor(ModelMonitor):
 
     @action(_('Revoke selected tasks'))
     def revoke_tasks(self, request, queryset):
-        with current_app.default_connection() as connection:
-            for state in queryset:
-                revoke(state.task_id, connection=connection)
+        for state in queryset:
+            revoke(state.task_id)
 
     @action(_('Terminate selected tasks'))
     def terminate_tasks(self, request, queryset):
-        with current_app.default_connection() as connection:
-            for state in queryset:
-                revoke(state.task_id, connection=connection, terminate=True)
+        for state in queryset:
+            revoke(state.task_id, terminate=True)
 
     @action(_('Kill selected tasks'))
     def kill_tasks(self, request, queryset):
-        with current_app.default_connection() as connection:
-            for state in queryset:
-                revoke(state.task_id, connection=connection,
-                       terminate=True, signal='KILL')
+        for state in queryset:
+            revoke(state.task_id, terminate=True, signal='KILL')
 
     @action(_('Retry selected tasks'))
     def retry_tasks(self, request, queryset):
-        with current_app.default_connection() as connection:
-            for state in queryset:
-                task = symbol_by_name(state.name)
-                kwargs = {
-                    "args": ast.literal_eval(state.args),
-                    "kwargs": ast.literal_eval(state.kwargs),
-                    "countdown": RETRY_TASK_COUNTDOWN,
-                    "connection": connection
-                }
-                task.apply_async(**kwargs)
+        for state in queryset:
+            task = symbol_by_name(state.name)
+            kwargs = {
+                "args": ast.literal_eval(state.args),
+                "kwargs": ast.literal_eval(state.kwargs),
+                "countdown": RETRY_TASK_COUNTDOWN,
+            }
+            task.apply_async(**kwargs)
 
     @action(_('Rate limit selected tasks'))
     def rate_limit_tasks(self, request, queryset):
@@ -211,9 +204,8 @@ class TaskMonitor(ModelMonitor):
         app_label = opts.app_label
         if request.POST.get('post'):
             rate = request.POST['rate_limit']
-            with current_app.default_connection() as connection:
-                for task_name in tasks:
-                    rate_limit(task_name, rate, connection=connection)
+            for task_name in tasks:
+                rate_limit(task_name, rate)
             return None
 
         context = {
