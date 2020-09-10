@@ -174,26 +174,26 @@ class TaskMonitor(ModelMonitor):
 
     @action(_('Revoke selected tasks'))
     def revoke_tasks(self, request, queryset):
-        with current_app.default_connection() as connection:
+        with current_app.connection() as connection:
             for state in queryset:
                 revoke(state.task_id, connection=connection)
 
     @action(_('Terminate selected tasks'))
     def terminate_tasks(self, request, queryset):
-        with current_app.default_connection() as connection:
+        with current_app.connection() as connection:
             for state in queryset:
                 revoke(state.task_id, connection=connection, terminate=True)
 
     @action(_('Kill selected tasks'))
     def kill_tasks(self, request, queryset):
-        with current_app.default_connection() as connection:
+        with current_app.connection() as connection:
             for state in queryset:
                 revoke(state.task_id, connection=connection,
                        terminate=True, signal='KILL')
 
     @action(_('Retry selected tasks'))
     def retry_tasks(self, request, queryset):
-        with current_app.default_connection() as connection:
+        with current_app.connection() as connection:
             for state in queryset:
                 task = symbol_by_name(state.name)
                 kwargs = {
@@ -211,7 +211,7 @@ class TaskMonitor(ModelMonitor):
         app_label = opts.app_label
         if request.POST.get('post'):
             rate = request.POST['rate_limit']
-            with current_app.default_connection() as connection:
+            with current_app.connection() as connection:
                 for task_name in tasks:
                     rate_limit(task_name, rate, connection=connection)
             return None
