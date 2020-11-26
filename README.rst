@@ -5,7 +5,7 @@ Celery Monitoring for Django
 :Version: 1.1.2
 :Web: https://django-celery-monitor.readthedocs.io/
 :Download: https://pypi.python.org/pypi/django_celery_monitor
-:Source: https://github.com/jezdez/django-celery-monitor
+:Source: https://github.com/jazzband/django-celery-monitor
 :Keywords: django, celery, events, monitoring
 
 |build-status| |coverage| |license| |wheel| |pyversion| |pyimp|
@@ -125,12 +125,12 @@ In your Celery configuration simply set them to override the defaults, e.g.::
     monitor_task_success_expires = timedelta(days=7)
 
 
-.. |build-status| image:: https://secure.travis-ci.org/jezdez/django-celery-monitor.svg?branch=master
-    :alt: Build status
-    :target: https://travis-ci.org/jezdez/django-celery-monitor
+.. |build-status| image:: https://github.com/jazzband/django-celery-monitor/workflows/Test/badge.svg
+   :target: https://github.com/jazzband/django-celery-monitor/actions
+   :alt: GitHub Actions
 
-.. |coverage| image:: https://codecov.io/github/jezdez/django-celery-monitor/coverage.svg?branch=master
-    :target: https://codecov.io/github/jezdez/django-celery-monitor?branch=master
+.. |coverage| image:: https://codecov.io/github/jazzband/django-celery-monitor/coverage.svg?branch=master
+    :target: https://codecov.io/github/jazzband/django-celery-monitor?branch=master
 
 .. |license| image:: https://img.shields.io/pypi/l/django-celery-monitor.svg
     :alt: BSD License

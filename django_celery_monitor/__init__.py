@@ -13,7 +13,7 @@ from collections import namedtuple
 __version__ = '1.1.2'
 __author__ = 'Jannis Leidel'
 __contact__ = 'jannis@leidel.info'
-__homepage__ = 'https://github.com/jezdez/django-celery-monitor'
+__homepage__ = 'https://github.com/jazzband/django-celery-monitor'
 __docformat__ = 'restructuredtext'
 
 # -eof meta-
