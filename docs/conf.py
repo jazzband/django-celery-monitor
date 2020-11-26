@@ -12,7 +12,7 @@ globals().update(conf.build_config(
     version_stable='1.1.2',
     canonical_url='http://django-celery-monitor.readthedocs.io',
     webdomain='',
-    github_project='jezdez/django-celery-monitor',
+    github_project='jazzband/django-celery-monitor',
     copyright='2009-2017',
     django_settings='proj.settings',
     include_intersphinx={'python', 'sphinx', 'django', 'celery'},
