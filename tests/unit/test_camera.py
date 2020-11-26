@@ -28,8 +28,8 @@ def Event(*args, **kwargs):
     return _Event(*args, **kwargs)
 
 
-@pytest.mark.django_db
 @pytest.mark.usefixtures('depends_on_current_app')
+@pytest.mark.django_db
 class test_Camera:
     Camera = camera.Camera
 
