@@ -62,8 +62,9 @@ class test_Camera:
             worker.event('heartbeat', t, t, {})
         self.state.workers[worker.hostname] = worker
         assert (
-            self.cam.get_heartbeat(worker) ==
-            make_aware(datetime.fromtimestamp(t3))
+            self.cam.get_heartbeat(worker) == make_aware(
+                datetime.fromtimestamp(t3)
+            )
         )
 
     def test_handle_worker(self):
@@ -140,24 +141,28 @@ class test_Camera:
             task.event('received', tstamp, tstamp, {})
             mt = self.cam.handle_task((task.uuid, task))
             assert (
-                mt.tstamp ==
-                datetime(2016, 6, 1, 15, 0, 0, tzinfo=timezone.utc)
+                mt.tstamp == datetime(
+                    2016, 6, 1, 15, 0, 0, tzinfo=timezone.utc
+                )
             )
             assert (
-                mt.eta ==
-                datetime(2016, 6, 1, 15, 16, 17, 654321, tzinfo=timezone.utc)
+                mt.eta == datetime(
+                    2016, 6, 1, 15, 16, 17, 654321, tzinfo=timezone.utc
+                )
             )
             assert (
-                mt.expires ==
-                datetime(2016, 7, 1, 12, 16, 17, 765432, tzinfo=timezone.utc)
+                mt.expires == datetime(
+                    2016, 7, 1, 12, 16, 17, 765432, tzinfo=timezone.utc
+                )
             )
 
             task = self.create_task(worker, eta='2016-06-04T15:16:17.654321')
             task.event('received', tstamp, tstamp, {})
             mt = self.cam.handle_task((task.uuid, task))
             assert (
-                mt.eta ==
-                datetime(2016, 6, 4, 15, 16, 17, 654321, tzinfo=timezone.utc)
+                mt.eta == datetime(
+                    2016, 6, 4, 15, 16, 17, 654321, tzinfo=timezone.utc
+                )
             )
 
         with override_settings(USE_TZ=False, TIME_ZONE='Europe/Helsinki'):
