@@ -42,9 +42,6 @@ class MetricsContainer:
         self._metrics = []
         self.cloudwatch_client = boto3.client(
             "cloudwatch",
-            aws_access_key_id=self.state.app.conf.aws_access_key_id,
-            aws_secret_access_key=self.state.app.conf.aws_secret_access_key,
-            region_name=self.state.app.conf.aws_region_name,
         ) if self.state.app.conf.cloudwatch_metrics_enabled else None
 
     def add(self, *args, **kwargs):
