@@ -11,6 +11,8 @@ except ImportError:
 
 
 class Metric:
+    """Single record of cloudwatch metrics."""
+
     def __init__(
             self, name, unit=None, value=None, dimensions=None):
         self.name = name
@@ -37,6 +39,8 @@ class Metric:
 
 
 class MetricsContainer:
+    """Container for Metric records."""
+
     def __init__(self, state):
         self.state = state
         self._metrics = []
@@ -49,10 +53,7 @@ class MetricsContainer:
         self._metrics.append(Metric(*args, **kwargs))
 
     def prepare_metrics(self):
-        """Gather waiting tasks by queues defined in CELERY_QUEUES config. Also
-        worker specific metrics like active, reserved, scheduled, revoked tasks
-        and completed tasks by aggregated by workers.
-        """
+        """Gather waiting tasks by queues and worker specific metrics."""
         with self.state.app.pool.acquire(block=True) as connection:
             # waiting in the queue
             for queue in self.state.app.conf.CELERY_QUEUES:
@@ -97,9 +98,7 @@ class MetricsContainer:
             )
 
     def send(self):
-        """Serialize metrics to json, then send them to cloudwatch, if
-        cloudwatch_metrics_enabled is not enabled, then log the data.
-        """
+        """Serialize metrics to json, then send if those are enabled."""
         metrics_data = [metric.serialize() for metric in self._metrics]
         if self.cloudwatch_client:
             self.cloudwatch_client.put_metric_data(
@@ -111,18 +110,16 @@ class MetricsContainer:
 
 
 class CloudwatchCamera(Camera):
+    """Camera that sends metrics to cloudwatch."""
+
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+        super(CloudwatchCamera, self).__init__(*args, **kwargs)
         self.app.add_defaults({
             'cloudwatch_metrics_enabled': False,
-            'aws_access_key_id': None,
-            'aws_secret_access_key': None,
         })
 
     def on_shutter(self, state):
-        """Prepare metrics and send them after the handling the snapshotted
-        tasks and workers.
-        """
+        """Prepare metrics and send the snapshotted state."""
         metrics = MetricsContainer(state=state)
         metrics.prepare_metrics()
         super().on_shutter(state)
