@@ -10,7 +10,7 @@ except ImportError:
     )
 
 
-class Metric:
+class Metric(object):
     """Single record of cloudwatch metrics."""
 
     def __init__(
@@ -38,7 +38,7 @@ class Metric:
         return metric_data
 
 
-class MetricsContainer:
+class MetricsContainer(object):
     """Container for Metric records."""
 
     def __init__(self, state):
@@ -122,5 +122,5 @@ class CloudwatchCamera(Camera):
         """Prepare metrics and send the snapshotted state."""
         metrics = MetricsContainer(state=state)
         metrics.prepare_metrics()
-        super().on_shutter(state)
+        super(CloudwatchCamera, self).on_shutter(state)
         metrics.send()
