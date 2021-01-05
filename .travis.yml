@@ -1,7 +1,6 @@
 language: python
 sudo: false
 python:
-- '2.7'
 - '3.6'
 install: travis_retry pip install -U codecov tox-travis
 script: tox -v
