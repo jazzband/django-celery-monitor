@@ -23,18 +23,16 @@ class Metric(object):
     def serialize(self):
         """Serialize metric data to cloudwatch format, return json."""
         metric_data = {
-            'MetricName': self.name,
+            "MetricName": self.name,
+            "Unit": self.unit,
+            "Value": self.value,
         }
-        if self.unit:
-            metric_data['Unit'] = self.unit
-
         if self.dimensions:
-            metric_data['Dimensions'] = [
+            metric_data["Dimensions"] = [
                 {
-                    'Name': name, 'Value': value
+                    "Name": name, "Value": value
                 } for name, value in self.dimensions.items()
             ]
-        metric_data['Value'] = self.value
         return metric_data
 
 
@@ -52,6 +50,10 @@ class MetricsContainer(object):
         """Add Metric object."""
         self._metrics.append(Metric(*args, **kwargs))
 
+    def _check_queue(self, connection, queue_name):
+        """Return size of the queue by connection and queue_name."""
+        return connection.default_channel.client.llen(queue_name) or 0
+
     def prepare_metrics(self):
         """Gather waiting tasks by queues and worker specific metrics."""
         with self.state.app.pool.acquire(block=True) as connection:
@@ -63,17 +65,15 @@ class MetricsContainer(object):
                         "QueueName": queue.name,
                     },
                     unit="Count",
-                    value=(
-                        connection.default_channel.client.llen(queue.name) or 0
-                    )
+                    value=self._check_queue(connection, queue.name)
                 )
         # worker specific
         inspect = self.state.app.control.inspect()
         workers_tasks_map = {
-            "WorkerActiveTasks": inspect.active(),
-            "WorkerReservedTasks": inspect.reserved(),
-            "WorkerScheduledTasks": inspect.scheduled(),
-            "WorkerRevokedTasks": inspect.revoked(),
+            "WorkerActiveTasks": inspect.active() or {},
+            "WorkerReservedTasks": inspect.reserved() or {},
+            "WorkerScheduledTasks": inspect.scheduled() or {},
+            "WorkerRevokedTasks": inspect.revoked() or {},
         }
         for metric, worker_tasks in workers_tasks_map.items():
             for worker, tasks in worker_tasks.items():
@@ -86,7 +86,7 @@ class MetricsContainer(object):
                     value=len(tasks),
                 )
         # completed tasks
-        stats = inspect.stats()
+        stats = inspect.stats() or {}
         for worker, statistics in stats.items():
             self.add(
                 name="WorkerCompletedTasks",
@@ -115,7 +115,7 @@ class CloudwatchCamera(Camera):
     def __init__(self, *args, **kwargs):
         super(CloudwatchCamera, self).__init__(*args, **kwargs)
         self.app.add_defaults({
-            'cloudwatch_metrics_enabled': False,
+            "cloudwatch_metrics_enabled": False,
         })
 
     def on_shutter(self, state):
