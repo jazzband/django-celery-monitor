@@ -10,7 +10,7 @@ except ImportError:
     )
 
 
-class Metric(object):
+class Metric:
     """Single record of cloudwatch metrics."""
 
     def __init__(
@@ -36,19 +36,25 @@ class Metric(object):
         return metric_data
 
 
-class MetricsContainer(object):
+class MetricsContainer:
     """Container for Metric records."""
 
     def __init__(self, state):
         self.state = state
         self._metrics = []
-        self.cloudwatch_client = boto3.client(
-            "cloudwatch",
-        ) if self.state.app.conf.cloudwatch_metrics_enabled else None
 
-    def add(self, *args, **kwargs):
+    def __len__(self):
+        return len(self._metrics)
+
+    def __iter__(self):
+        return iter(self._metrics)
+
+    def __contains__(self, item):
+        return item in self._metrics
+
+    def add(self, metric: Metric):
         """Add Metric object."""
-        self._metrics.append(Metric(*args, **kwargs))
+        self._metrics.append(metric)
 
     def _check_queue(self, connection, queue_name):
         """Return size of the queue by connection and queue_name."""
@@ -60,12 +66,14 @@ class MetricsContainer(object):
             # waiting in the queue
             for queue in self.state.app.conf.CELERY_QUEUES:
                 self.add(
-                    name="QueueWaitingTasks",
-                    dimensions={
-                        "QueueName": queue.name,
-                    },
-                    unit="Count",
-                    value=self._check_queue(connection, queue.name)
+                    Metric(
+                        name="QueueWaitingTasks",
+                        dimensions={
+                            "QueueName": queue.name,
+                        },
+                        unit="Count",
+                        value=self._check_queue(connection, queue.name)
+                    )
                 )
         # worker specific
         inspect = self.state.app.control.inspect()
@@ -78,49 +86,58 @@ class MetricsContainer(object):
         for metric, worker_tasks in workers_tasks_map.items():
             for worker, tasks in worker_tasks.items():
                 self.add(
-                    name=metric,
-                    dimensions={
-                        "WorkerName": worker,
-                    },
-                    unit="Count",
-                    value=len(tasks),
+                    Metric(
+                        name=metric,
+                        dimensions={
+                            "WorkerName": worker,
+                        },
+                        unit="Count",
+                        value=len(tasks),
+                    )
                 )
         # completed tasks
         stats = inspect.stats() or {}
         for worker, statistics in stats.items():
             self.add(
-                name="WorkerCompletedTasks",
-                dimensions={
-                    "WorkerName": worker,
-                },
-                unit="Count",
-                value=sum(statistics.get("total", {}).values()),
+                Metric(
+                    name="WorkerCompletedTasks",
+                    dimensions={
+                        "WorkerName": worker,
+                    },
+                    unit="Count",
+                    value=sum(statistics.get("total", {}).values()),
+                )
             )
-
-    def send(self):
-        """Serialize metrics to json, then send if those are enabled."""
-        metrics_data = [metric.serialize() for metric in self._metrics]
-        if self.cloudwatch_client:
-            self.cloudwatch_client.put_metric_data(
-                Namespace="Celery",
-                MetricData=metrics_data,
-            )
-        else:
-            logger.debug(metrics_data)
 
 
 class CloudwatchCamera(Camera):
     """Camera that sends metrics to cloudwatch."""
 
     def __init__(self, *args, **kwargs):
-        super(CloudwatchCamera, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.app.add_defaults({
             "cloudwatch_metrics_enabled": False,
         })
+
+    def send_metrics(self, state, data):
+        """Serialize metrics to json, then send if those are enabled."""
+        if state.app.conf.cloudwatch_metrics_enabled:
+            cloudwatch_client = boto3.client(
+                "cloudwatch",
+            )
+            cloudwatch_client.put_metric_data(
+                Namespace="Celery",
+                MetricData=data,
+            )
+        else:
+            logger.debug(data)
 
     def on_shutter(self, state):
         """Prepare metrics and send the snapshotted state."""
         metrics = MetricsContainer(state=state)
         metrics.prepare_metrics()
-        super(CloudwatchCamera, self).on_shutter(state)
-        metrics.send()
+        super().on_shutter(state)
+        self.send_metrics(
+            state=state,
+            data=[metric.serialize() for metric in metrics],
+        )

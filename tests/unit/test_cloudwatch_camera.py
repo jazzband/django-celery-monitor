@@ -1,5 +1,3 @@
-from __future__ import absolute_import, unicode_literals
-
 import logging
 from itertools import count
 from mock import patch
@@ -79,9 +77,25 @@ class test_MetricsContainer:
     def test_add(self):
         metrics_container = cloudwatch_camera.MetricsContainer(self.state)
         assert metrics_container._metrics == []
-        assert metrics_container.cloudwatch_client is None
-        metrics_container.add(name="TestMetric", unit="SomeUnit", value=12)
+        metrics_container.add(
+            cloudwatch_camera.Metric(
+                name="TestMetric", unit="SomeUnit", value=12
+            )
+        )
         assert len(metrics_container._metrics) == 1
+
+    def test_container_methods(self):
+        metrics_container = cloudwatch_camera.MetricsContainer(self.state)
+        assert len(metrics_container) == 0
+
+        example_metric = cloudwatch_camera.Metric(
+            name="TestMetric", unit="SomeUnit", value=12
+        )
+        metrics_container.add(example_metric)
+        assert example_metric in metrics_container
+        assert len(metrics_container) == 1
+        for metric in metrics_container:
+            assert isinstance(metric, cloudwatch_camera.Metric)
 
 
 _ids = count(0)
