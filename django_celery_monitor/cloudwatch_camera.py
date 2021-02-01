@@ -117,6 +117,7 @@ class CloudwatchCamera(Camera):
         super().__init__(*args, **kwargs)
         self.app.add_defaults({
             "cloudwatch_metrics_enabled": False,
+            "cloudwatch_metrics_region_name": None,
         })
 
     def send_metrics(self, state, data):
@@ -124,6 +125,7 @@ class CloudwatchCamera(Camera):
         if state.app.conf.cloudwatch_metrics_enabled:
             cloudwatch_client = boto3.client(
                 "cloudwatch",
+                region_name=state.app.conf.cloudwatch_metrics_region_name,
             )
             cloudwatch_client.put_metric_data(
                 Namespace="Celery",
