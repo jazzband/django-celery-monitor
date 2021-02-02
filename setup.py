@@ -147,6 +147,9 @@ setuptools.setup(
     license='BSD',
     classifiers=classifiers,
     install_requires=reqs('default.txt'),
+    extras_require={
+        "boto3": "boto3>=1.14.59",
+    },
     tests_require=reqs('test.txt'),
     cmdclass={'test': pytest},
     zip_safe=False,

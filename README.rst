@@ -101,6 +101,14 @@ There are a few settings that regulate how long the task monitor should keep
 state entries in the database. Either of the three should be a
 ``datetime.timedelta`` value or ``None``.
 
+- ``cloudwatch_metrics_enabled`` -- Defaults to ``False``
+  
+  Enable cloudwatch metrics for celery.
+
+- ``cloudwatch_metrics_region_name`` -- Defaults to ``None``
+
+  Which regions should be used for pushing metrics.
+
 - ``monitor_task_success_expires`` -- Defaults to ``timedelta(days=1)`` (1 day)
 
   The period of time to retain monitoring information about tasks with a
