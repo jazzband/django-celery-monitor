@@ -1,5 +1,13 @@
 """The Cloudwatch Celery events camera."""
-from .camera import Camera, logger
+from __future__ import absolute_import, unicode_literals
+
+from django_celery_monitor.camera import Camera
+
+from celery.utils.log import get_logger
+
+
+logger = get_logger(__name__)
+
 
 try:
     import boto3
@@ -58,11 +66,14 @@ class MetricsContainer:
 
     def _check_queue(self, connection, queue_name):
         """Return size of the queue by connection and queue_name."""
-        return connection.default_channel.client.llen(queue_name) or 0
+        channel = connection.channel()
+        queue_length = channel.client.llen(queue_name)
+        channel.close()
+        return queue_length or 0
 
     def prepare_metrics(self):
         """Gather waiting tasks by queues and worker specific metrics."""
-        with self.state.app.pool.acquire(block=True) as connection:
+        with self.state.app.pool.acquire(block=False) as connection:
             # waiting in the queue
             for queue in self.state.app.conf.CELERY_QUEUES:
                 self.add(
