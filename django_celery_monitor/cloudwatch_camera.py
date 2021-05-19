@@ -21,8 +21,7 @@ except ImportError:
 class Metric:
     """Single record of cloudwatch metrics."""
 
-    def __init__(
-            self, name, unit=None, value=None, dimensions=None):
+    def __init__(self, name, unit=None, value=None, dimensions=None):
         self.name = name
         self.unit = unit
         self.value = value
@@ -73,6 +72,7 @@ class MetricsContainer:
 
     def prepare_metrics(self):
         """Gather waiting tasks by queues and worker specific metrics."""
+        environment = self.state.app.conf.cloudwatch_metrics_environment
         with self.state.app.pool.acquire(block=False) as connection:
             # waiting in the queue
             for queue in self.state.app.conf.CELERY_QUEUES:
@@ -81,6 +81,7 @@ class MetricsContainer:
                         name="QueueWaitingTasks",
                         dimensions={
                             "QueueName": queue.name,
+                            "Environment": environment,
                         },
                         unit="Count",
                         value=self._check_queue(connection, queue.name)
@@ -101,6 +102,7 @@ class MetricsContainer:
                         name=metric,
                         dimensions={
                             "WorkerName": worker,
+                            "Environment": environment,
                         },
                         unit="Count",
                         value=len(tasks),
@@ -114,6 +116,7 @@ class MetricsContainer:
                     name="WorkerCompletedTasks",
                     dimensions={
                         "WorkerName": worker,
+                        "Environment": environment
                     },
                     unit="Count",
                     value=sum(statistics.get("total", {}).values()),
@@ -129,6 +132,7 @@ class CloudwatchCamera(Camera):
         self.app.add_defaults({
             "cloudwatch_metrics_enabled": False,
             "cloudwatch_metrics_region_name": None,
+            "cloudwatch_metrics_environment": "",
         })
 
     def send_metrics(self, state, data):
