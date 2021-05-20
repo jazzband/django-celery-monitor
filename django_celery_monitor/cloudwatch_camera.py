@@ -146,8 +146,7 @@ class CloudwatchCamera(Camera):
                 Namespace="Celery",
                 MetricData=data,
             )
-        else:
-            logger.debug(data)
+        logger.debug(data)
 
     def on_shutter(self, state):
         """Prepare metrics and send the snapshotted state."""
