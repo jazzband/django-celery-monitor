@@ -124,6 +124,7 @@ class test_CloudwatchCamera:
         self.app = app
         self.app.add_defaults({
             "cloudwatch_metrics_enabled": False,
+            "cloudwatch_metrics_environment": "dev",
             "CELERY_QUEUES": (
                 Queue(
                     "default",
@@ -169,3 +170,4 @@ class test_CloudwatchCamera:
                 assert "QueueWaitingTasks" in caplog.text
                 assert "default" in caplog.text
                 assert "'Value': 2" in caplog.text
+                assert "'Value': 'dev'" in caplog.text
