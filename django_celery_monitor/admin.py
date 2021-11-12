@@ -11,6 +11,7 @@ from django.template import RequestContext
 from django.utils.encoding import force_text
 from django.utils.html import escape
 from django.utils.translation import ugettext_lazy as _
+from django.utils.safestring import mark_safe
 
 from celery import current_app
 from celery import states
@@ -48,7 +49,7 @@ def colored_state(task):
     """
     state = escape(task.state)
     color = TASK_STATE_COLORS.get(task.state, 'black')
-    return '<b><span style="color: {0};">{1}</span></b>'.format(color, state)
+    return mark_safe('<b><span style="color: {0};">{1}</span></b>'.format(color, state))
 
 
 @display_field(_('state'), 'last_heartbeat')
@@ -59,14 +60,14 @@ def node_state(node):
     """
     state = node.is_alive() and 'ONLINE' or 'OFFLINE'
     color = NODE_STATE_COLORS[state]
-    return '<b><span style="color: {0};">{1}</span></b>'.format(color, state)
+    return mark_safe('<b><span style="color: {0};">{1}</span></b>'.format(color, state))
 
 
 @display_field(_('ETA'), 'eta')
 def eta(task):
     """Return the task ETA as a grey "none" if none is provided."""
     if not task.eta:
-        return '<span style="color: gray;">none</span>'
+        return mark_safe('<span style="color: gray;">none</span>')
     return escape(make_aware(task.eta))
 
 
@@ -78,18 +79,18 @@ def tstamp(task):
     it as a "natural date" -- a human readable version.
     """
     value = make_aware(task.tstamp)
-    return '<div title="{0}">{1}</div>'.format(
+    return mark_safe('<div title="{0}">{1}</div>'.format(
         escape(str(value)), escape(naturaldate(value)),
-    )
+    ))
 
 
 @display_field(_('name'), 'name')
 def name(task):
     """Return the task name and abbreviates it to maximum of 16 characters."""
     short_name = abbrtask(task.name, 16)
-    return '<div title="{0}"><b>{1}</b></div>'.format(
+    return mark_safe('<div title="{0}"><b>{1}</b></div>'.format(
         escape(task.name), escape(short_name),
-    )
+    ))
 
 
 class ModelMonitor(admin.ModelAdmin):
