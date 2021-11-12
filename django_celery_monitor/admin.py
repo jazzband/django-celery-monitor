@@ -1,7 +1,7 @@
 """Result Task Admin interface."""
 from __future__ import absolute_import, unicode_literals
 
-from __future__ import absolute_import, unicode_literals
+import ast
 
 from django.contrib import admin
 from django.contrib.admin import helpers
@@ -15,6 +15,7 @@ from django.utils.translation import ugettext_lazy as _
 from celery import current_app
 from celery import states
 from celery.task.control import broadcast, revoke, rate_limit
+from celery.utils.imports import symbol_by_name
 from celery.utils.text import abbrtask
 
 from .models import TaskState, WorkerState
@@ -30,6 +31,8 @@ TASK_STATE_COLORS = {states.SUCCESS: 'green',
                      'RECEIVED': 'blue'}
 NODE_STATE_COLORS = {'ONLINE': 'green',
                      'OFFLINE': 'gray'}
+
+RETRY_TASK_COUNTDOWN = 10
 
 
 class MonitorList(main_views.ChangeList):
@@ -189,6 +192,19 @@ class TaskMonitor(ModelMonitor):
             for state in queryset:
                 revoke(state.task_id, connection=connection,
                        terminate=True, signal='KILL')
+
+    @action(_('Retry selected tasks'))
+    def retry_tasks(self, request, queryset):
+        with current_app.default_connection() as connection:
+            for state in queryset:
+                task = symbol_by_name(state.name)
+                kwargs = {
+                    'args': ast.literal_eval(state.args),
+                    'kwargs': ast.literal_eval(state.kwargs),
+                    'countdown': RETRY_TASK_COUNTDOWN,
+                    'connection': connection
+                }
+                task.apply_async(**kwargs)
 
     @action(_('Rate limit selected tasks'))
     def rate_limit_tasks(self, request, queryset):
