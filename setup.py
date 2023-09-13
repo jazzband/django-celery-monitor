@@ -45,6 +45,7 @@ classes = """
     Programming Language :: Python :: 3.4
     Programming Language :: Python :: 3.5
     Programming Language :: Python :: 3.6
+    Programming Language :: Python :: 3.7
     Programming Language :: Python :: Implementation :: CPython
     Programming Language :: Python :: Implementation :: PyPy
     Framework :: Django
@@ -52,6 +53,7 @@ classes = """
     Framework :: Django :: 1.9
     Framework :: Django :: 1.10
     Framework :: Django :: 1.11
+    Framework :: Django :: 2.2
     Operating System :: OS Independent
     Topic :: Communications
     Topic :: System :: Distributed Computing
@@ -147,7 +149,12 @@ setuptools.setup(
     license='BSD',
     classifiers=classifiers,
     install_requires=reqs('default.txt'),
-    tests_require=reqs('test.txt'),
+    test_require=[
+        'case>=1.3.1',
+        'pytest>=3.0',
+        'pytest-django',
+        'pytz>dev',
+    ],
     cmdclass={'test': pytest},
     zip_safe=False,
     include_package_data=True,
