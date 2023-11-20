@@ -5,18 +5,15 @@ from itertools import count
 from time import time
 
 import pytest
-
 from celery import states
 from celery.events import Event as _Event
-from celery.events.state import State, Worker, Task
+from celery.events.state import State, Task, Worker
 from celery.utils import gen_unique_id
-
 from django.test.utils import override_settings
 from django.utils import timezone
 
 from django_celery_monitor import camera, models
 from django_celery_monitor.utils import make_aware
-
 
 _ids = count(0)
 _clock = count(1)

@@ -1,5 +1,6 @@
 """The model managers."""
 from __future__ import absolute_import, unicode_literals
+
 from datetime import timedelta
 
 from celery import states

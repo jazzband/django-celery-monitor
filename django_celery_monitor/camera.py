@@ -9,7 +9,7 @@ from celery.utils.imports import symbol_by_name
 from celery.utils.log import get_logger
 from celery.utils.time import maybe_iso8601
 
-from .utils import fromtimestamp, correct_awareness
+from .utils import correct_awareness, fromtimestamp
 
 WORKER_UPDATE_FREQ = 60  # limit worker timestamp write freq.
 SUCCESS_STATES = frozenset([states.SUCCESS])

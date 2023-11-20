@@ -3,28 +3,29 @@ from __future__ import absolute_import, unicode_literals
 
 from datetime import datetime
 
-from django.utils.translation import ungettext, ugettext as _
 from django.utils.timezone import now
+from django.utils.translation import gettext as _
+from django.utils.translation import ngettext
 
 
 def pluralize_year(n):
     """Return a string with the number of yeargs ago."""
-    return ungettext(_('{num} year ago'), _('{num} years ago'), n)
+    return ngettext(_('{num} year ago'), _('{num} years ago'), n)
 
 
 def pluralize_month(n):
     """Return a string with the number of months ago."""
-    return ungettext(_('{num} month ago'), _('{num} months ago'), n)
+    return ngettext(_('{num} month ago'), _('{num} months ago'), n)
 
 
 def pluralize_week(n):
     """Return a string with the number of weeks ago."""
-    return ungettext(_('{num} week ago'), _('{num} weeks ago'), n)
+    return ngettext(_('{num} week ago'), _('{num} weeks ago'), n)
 
 
 def pluralize_day(n):
     """Return a string with the number of days ago."""
-    return ungettext(_('{num} day ago'), _('{num} days ago'), n)
+    return ngettext(_('{num} day ago'), _('{num} days ago'), n)
 
 
 OLDER_CHUNKS = (
@@ -57,19 +58,19 @@ def naturaldate(date, include_seconds=False):
     if days == 0:
         if hours == 0:
             if minutes > 0:
-                return ungettext(
+                return ngettext(
                     _('{minutes} minute ago'),
                     _('{minutes} minutes ago'), minutes
                 ).format(minutes=minutes)
             else:
                 if include_seconds and seconds:
-                    return ungettext(
+                    return ngettext(
                         _('{seconds} second ago'),
                         _('{seconds} seconds ago'), seconds
                     ).format(seconds=seconds)
                 return _('just now')
         else:
-            return ungettext(
+            return ngettext(
                 _('{hours} hour ago'), _('{hours} hours ago'), hours
             ).format(hours=hours)
 

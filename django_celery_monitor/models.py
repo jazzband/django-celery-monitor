@@ -1,14 +1,13 @@
 """The data models for the task and worker states."""
 from __future__ import absolute_import, unicode_literals
 
-from time import time, mktime, gmtime
-
-from django.db import models
-from django.utils.translation import ugettext_lazy as _
-from django.conf import settings
+from time import gmtime, mktime, time
 
 from celery import states
 from celery.events.state import heartbeat_expires
+from django.conf import settings
+from django.db import models
+from django.utils.translation import gettext_lazy as _
 from six import python_2_unicode_compatible
 
 from . import managers
