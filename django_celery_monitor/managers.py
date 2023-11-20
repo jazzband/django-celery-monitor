@@ -14,31 +14,7 @@ class ExtendedQuerySet(models.QuerySet):
     """A custom model queryset that implements a few helpful methods."""
 
     def select_for_update_or_create(self, defaults=None, **kwargs):
-        """Extend update_or_create with select_for_update.
-
-        Look up an object with the given kwargs, updating one with defaults
-        if it exists, otherwise create a new one.
-        Return a tuple (object, created), where created is a boolean
-        specifying whether an object was created.
-
-        This is a backport from Django 1.11
-        (https://code.djangoproject.com/ticket/26804) to support
-        select_for_update when getting the object.
-        """
-        defaults = defaults or {}
-        lookup, params = self._extract_model_params(defaults, **kwargs)
-        self._for_write = True
-        with transaction.atomic(using=self.db):
-            try:
-                obj = self.select_for_update().get(**lookup)
-            except self.model.DoesNotExist:
-                obj, created = self._create_object_from_params(lookup, params)
-                if created:
-                    return obj, created
-            for k, v in defaults.items():
-                setattr(obj, k, v() if callable(v) else v)
-            obj.save(using=self.db)
-        return obj, False
+        return self.update_or_create(defaults, **kwargs)
 
 
 class WorkerStateQuerySet(ExtendedQuerySet):
