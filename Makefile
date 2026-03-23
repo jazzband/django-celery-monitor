@@ -1,12 +1,9 @@
 PROJ=django_celery_monitor
 PYTHON=python
-PYTEST=py.test
 GIT=git
 TOX=tox
-ICONV=iconv
-FLAKE8=flake8
-FLAKEPLUS=flakeplus
-PYDOCSTYLE=pydocstyle
+RUFF=ruff
+PRE_COMMIT=pre-commit
 
 TESTDIR=t
 SPHINX_DIR=docs/
@@ -25,12 +22,11 @@ help:
 	@echo "  lint ------------  - Check codebase for problems."
 	@echo "    apicheck         - Check API reference coverage."
 	@echo "    configcheck      - Check configuration reference coverage."
-	@echo "    flakes --------  - Check code for syntax and style errors."
-	@echo "      flakecheck     - Run flake8 on the source code."
-	@echo "      flakepluscheck - Run flakeplus on the source code."
-	@echo "      pep257check    - Run pydocstyle on the source code."
+	@echo "    formatcheck      - Run ruff formatting checks."
+	@echo "    ruffcheck        - Run ruff lint checks."
+	@echo "    hooks            - Run repository hooks."
 	@echo "clean-dist --------- - Clean all distribution build artifacts."
-	@echo "  clean-git-force    - Remove all uncomitted files."
+	@echo "  clean-git-force    - Remove all uncommitted files."
 	@echo "  clean ------------ - Non-destructive clean"
 	@echo "    clean-pyc        - Remove .pyc/__pycache__ files"
 	@echo "    clean-docs       - Remove documentation build artifacts."
@@ -54,7 +50,8 @@ bump-major:
 	bumpversion major
 
 release:
-	python setup.py register sdist bdist_wheel upload --sign
+	python -m build
+	python -m twine upload dist/*
 
 Documentation:
 	(cd "$(SPHINX_DIR)"; $(MAKE) html)
@@ -65,7 +62,7 @@ docs: Documentation
 clean-docs:
 	-rm -rf "$(SPHINX_BUILDDIR)"
 
-lint: flakecheck apicheck configcheck
+lint: ruffcheck formatcheck apicheck configcheck
 
 apicheck:
 	(cd "$(SPHINX_DIR)"; $(MAKE) apicheck)
@@ -73,22 +70,14 @@ apicheck:
 configcheck:
 	true
 
-flakecheck:
-	$(FLAKE8) "$(PROJ)" "$(TESTDIR)"
+ruffcheck:
+	$(RUFF) check .
 
-flakediag:
-	-$(MAKE) flakecheck
+formatcheck:
+	$(RUFF) format --check .
 
-pep257check:
-	$(PYDOCSTYLE) "$(PROJ)"
-
-flakepluscheck:
-	$(FLAKEPLUS) --$(FLAKEPLUSTARGET) "$(PROJ)" "$(TESTDIR)"
-
-flakeplusdiag:
-	-$(MAKE) flakepluscheck
-
-flakes: flakediag flakeplusdiag pep257check
+hooks:
+	$(PRE_COMMIT) run --all-files
 
 clean-pyc:
 	-find . -type f -a \( -name "*.pyc" -o -name "*$$py.class" \) | xargs rm
@@ -109,10 +98,10 @@ test-all: clean-pyc
 	$(TOX)
 
 test:
-	$(PYTHON) setup.py test
+	pytest -xv --cov=django_celery_monitor --cov-report=term --cov-report=xml --no-cov-on-fail
 
 build:
-	$(PYTHON) setup.py sdist bdist_wheel
+	$(PYTHON) -m build
 
 distcheck: lint test clean
 

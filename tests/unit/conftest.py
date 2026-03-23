@@ -1,16 +1,18 @@
 from __future__ import absolute_import, unicode_literals
 
 import pytest
-
 from celery.contrib.pytest import depends_on_current_app
 from celery.contrib.testing.app import TestApp, Trap
 
-__all__ = ['app', 'depends_on_current_app']
+pytest_plugins = ("celery.contrib.pytest",)
+
+__all__ = ["app", "depends_on_current_app"]
 
 
-@pytest.fixture(scope='session', autouse=True)
+@pytest.fixture(scope="session", autouse=True)
 def setup_default_app_trap():
     from celery._state import set_default_app
+
     set_default_app(Trap())
 
 
@@ -20,8 +22,9 @@ def app(celery_app):
 
 
 @pytest.fixture(autouse=True)
-def test_cases_shortcuts(request, app, patching):
+def test_cases_shortcuts(request, app):
     if request.instance:
+
         @app.task
         def add(x, y):
             return x + y
@@ -30,7 +33,6 @@ def test_cases_shortcuts(request, app, patching):
         request.instance.app = app
         request.instance.Celery = TestApp
         request.instance.add = add
-        request.instance.patching = patching
     yield
     if request.instance:
         request.instance.app = None

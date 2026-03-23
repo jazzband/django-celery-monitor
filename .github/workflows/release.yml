@@ -11,38 +11,23 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Set up Python
-        uses: actions/setup-python@v2
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v5
         with:
-          python-version: 3.8
-
-      - name: Get pip cache dir
-        id: pip-cache
-        run: |
-          echo "::set-output name=dir::$(pip cache dir)"
-
-      - name: Cache
-        uses: actions/cache@v2
-        with:
-          path: ${{ steps.pip-cache.outputs.dir }}
-          key: release-${{ hashFiles('**/setup.py') }}
-          restore-keys: |
-            release-
+          python-version: "3.12"
+          enable-cache: true
 
       - name: Install dependencies
-        run: |
-          python -m pip install -U pip
-          python -m pip install -U setuptools twine wheel
+        run: uv sync --group lint
 
       - name: Build package
         run: |
-          python setup.py --version
-          python setup.py sdist --format=gztar bdist_wheel
-          twine check dist/*
+          uv run python -m build
+          uv run twine check dist/*
 
       - name: Upload packages to Jazzband
         if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')

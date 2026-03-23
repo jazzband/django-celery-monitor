@@ -1,5 +1,6 @@
 .DS_Store
 *.pyc
+__pycache__/
 *$py.class
 *~
 .*.sw[pon]
@@ -26,6 +27,8 @@ cover/
 .vagrant/
 *.sqlite3
 .cache/
+.pytest_cache/
+.ruff_cache/
 htmlcov/
 coverage.xml
 .tox/

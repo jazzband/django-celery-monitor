@@ -1,11 +1,13 @@
 """The model managers."""
+
 from __future__ import absolute_import, unicode_literals
+
 from datetime import timedelta
 
 from celery import states
 from celery.events.state import Task
 from celery.utils.time import maybe_timedelta
-from django.db import models, router, transaction
+from django.db import IntegrityError, models, router, transaction
 
 from .utils import Now
 
@@ -26,15 +28,24 @@ class ExtendedQuerySet(models.QuerySet):
         select_for_update when getting the object.
         """
         defaults = defaults or {}
-        lookup, params = self._extract_model_params(defaults, **kwargs)
         self._for_write = True
         with transaction.atomic(using=self.db):
             try:
-                obj = self.select_for_update().get(**lookup)
+                obj = self.select_for_update().get(**kwargs)
             except self.model.DoesNotExist:
-                obj, created = self._create_object_from_params(lookup, params)
-                if created:
-                    return obj, created
+                params = kwargs.copy()
+                params.update(
+                    {
+                        key: value() if callable(value) else value
+                        for key, value in defaults.items()
+                    }
+                )
+                try:
+                    obj = self.create(**params)
+                except IntegrityError:
+                    obj = self.select_for_update().get(**kwargs)
+                else:
+                    return obj, True
             for k, v in defaults.items():
                 setattr(obj, k, v() if callable(v) else v)
             obj.save(using=self.db)
@@ -59,7 +70,7 @@ class WorkerStateQuerySet(ExtendedQuerySet):
                 # if no, update the worker state and move on
                 obj, _ = self.select_for_update_or_create(
                     hostname=hostname,
-                    defaults={'last_heartbeat': heartbeat},
+                    defaults={"last_heartbeat": heartbeat},
                 )
         return obj
 
@@ -86,9 +97,7 @@ class TaskStateQuerySet(ExtendedQuerySet):
     def purge(self):
         """Purge all expired task states."""
         with transaction.atomic():
-            self.using(
-                router.db_for_write(self.model)
-            ).filter(hidden=True).delete()
+            self.using(router.db_for_write(self.model)).filter(hidden=True).delete()
 
     def update_state(self, state, task_id, defaults):
         with transaction.atomic():

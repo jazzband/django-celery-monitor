@@ -7,8 +7,8 @@ include LICENSE
 include README.rst
 include MANIFEST.in
 include Makefile
-include setup.cfg
-include setup.py
+include pyproject.toml
+include .pre-commit-config.yaml
 include manage.py
 include tox.ini
 recursive-include docs *

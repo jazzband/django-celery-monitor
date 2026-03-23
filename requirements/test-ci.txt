@@ -1,1 +1,1 @@
-pytest-cov
+-e .[test]

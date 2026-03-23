@@ -1,30 +1,30 @@
 """Some helpers to humanize values."""
-from __future__ import absolute_import, unicode_literals
 
 from datetime import datetime
 
-from django.utils.translation import ungettext, ugettext as _
 from django.utils.timezone import now
+from django.utils.translation import gettext as _
+from django.utils.translation import ngettext
 
 
 def pluralize_year(n):
     """Return a string with the number of yeargs ago."""
-    return ungettext(_('{num} year ago'), _('{num} years ago'), n)
+    return ngettext("{num} year ago", "{num} years ago", n)
 
 
 def pluralize_month(n):
     """Return a string with the number of months ago."""
-    return ungettext(_('{num} month ago'), _('{num} months ago'), n)
+    return ngettext("{num} month ago", "{num} months ago", n)
 
 
 def pluralize_week(n):
     """Return a string with the number of weeks ago."""
-    return ungettext(_('{num} week ago'), _('{num} weeks ago'), n)
+    return ngettext("{num} week ago", "{num} weeks ago", n)
 
 
 def pluralize_day(n):
     """Return a string with the number of days ago."""
-    return ungettext(_('{num} day ago'), _('{num} days ago'), n)
+    return ngettext("{num} day ago", "{num} days ago", n)
 
 
 OLDER_CHUNKS = (
@@ -38,11 +38,12 @@ OLDER_CHUNKS = (
 def naturaldate(date, include_seconds=False):
     """Convert datetime into a human natural date string."""
     if not date:
-        return ''
+        return ""
 
     right_now = now()
-    today = datetime(right_now.year, right_now.month,
-                     right_now.day, tzinfo=right_now.tzinfo)
+    today = datetime(
+        right_now.year, right_now.month, right_now.day, tzinfo=right_now.tzinfo
+    )
     delta = right_now - date
     delta_midnight = today - date
 
@@ -52,29 +53,33 @@ def naturaldate(date, include_seconds=False):
     seconds = delta.seconds
 
     if days < 0:
-        return _('just now')
+        return _("just now")
 
     if days == 0:
         if hours == 0:
             if minutes > 0:
-                return ungettext(
-                    _('{minutes} minute ago'),
-                    _('{minutes} minutes ago'), minutes
+                return ngettext(
+                    "{minutes} minute ago",
+                    "{minutes} minutes ago",
+                    minutes,
                 ).format(minutes=minutes)
             else:
                 if include_seconds and seconds:
-                    return ungettext(
-                        _('{seconds} second ago'),
-                        _('{seconds} seconds ago'), seconds
+                    return ngettext(
+                        "{seconds} second ago",
+                        "{seconds} seconds ago",
+                        seconds,
                     ).format(seconds=seconds)
-                return _('just now')
+                return _("just now")
         else:
-            return ungettext(
-                _('{hours} hour ago'), _('{hours} hours ago'), hours
+            return ngettext(
+                "{hours} hour ago",
+                "{hours} hours ago",
+                hours,
             ).format(hours=hours)
 
     if delta_midnight.days == 0:
-        return _('yesterday at {time}').format(time=date.strftime('%H:%M'))
+        return _("yesterday at {time}").format(time=date.strftime("%H:%M"))
 
     count = 0
     for chunk, pluralizefun in OLDER_CHUNKS:

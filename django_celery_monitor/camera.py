@@ -1,4 +1,5 @@
 """The Celery events camera."""
+
 from __future__ import absolute_import, unicode_literals
 
 from datetime import timedelta
@@ -9,12 +10,12 @@ from celery.utils.imports import symbol_by_name
 from celery.utils.log import get_logger
 from celery.utils.time import maybe_iso8601
 
-from .utils import fromtimestamp, correct_awareness
+from .utils import correct_awareness, fromtimestamp
 
 WORKER_UPDATE_FREQ = 60  # limit worker timestamp write freq.
 SUCCESS_STATES = frozenset([states.SUCCESS])
 
-NOT_SAVED_ATTRIBUTES = frozenset(['name', 'args', 'kwargs', 'eta'])
+NOT_SAVED_ATTRIBUTES = frozenset(["name", "args", "kwargs", "eta"])
 
 logger = get_logger(__name__)
 debug = logger.debug
@@ -29,24 +30,27 @@ class Camera(Polaroid):
     def __init__(self, *args, **kwargs):
         super(Camera, self).__init__(*args, **kwargs)
         # Expiry can be timedelta or None for never expire.
-        self.app.add_defaults({
-            'monitors_expire_success': timedelta(days=1),
-            'monitors_expire_error': timedelta(days=3),
-            'monitors_expire_pending': timedelta(days=5),
-        })
+        self.app.add_defaults(
+            {
+                "monitors_expire_success": timedelta(days=1),
+                "monitors_expire_error": timedelta(days=3),
+                "monitors_expire_pending": timedelta(days=5),
+            }
+        )
 
     @property
     def TaskState(self):
         """Return the data model to store task state in."""
-        return symbol_by_name('django_celery_monitor.models.TaskState')
+        return symbol_by_name("django_celery_monitor.models.TaskState")
 
     @property
     def WorkerState(self):
         """Return the data model to store worker state in."""
-        return symbol_by_name('django_celery_monitor.models.WorkerState')
+        return symbol_by_name("django_celery_monitor.models.WorkerState")
 
     def django_setup(self):
         import django
+
         django.setup()
 
     def install(self):
@@ -86,28 +90,31 @@ class Camera(Polaroid):
             )
 
         defaults = {
-            'name': task.name,
-            'args': task.args,
-            'kwargs': task.kwargs,
-            'eta': correct_awareness(maybe_iso8601(task.eta)),
-            'expires': correct_awareness(maybe_iso8601(task.expires)),
-            'state': task.state,
-            'tstamp': fromtimestamp(task.timestamp),
-            'result': task.result or task.exception,
-            'traceback': task.traceback,
-            'runtime': task.runtime,
-            'worker': worker
+            "name": task.name,
+            "args": task.args,
+            "kwargs": task.kwargs,
+            "eta": correct_awareness(maybe_iso8601(task.eta)),
+            "expires": correct_awareness(maybe_iso8601(task.expires)),
+            "state": task.state,
+            "tstamp": fromtimestamp(task.timestamp),
+            "result": task.result or task.exception,
+            "traceback": task.traceback,
+            "runtime": task.runtime,
+            "worker": worker,
         }
         # Some fields are only stored in the RECEIVED event,
         # so we should remove these from default values,
         # so that they are not overwritten by subsequent states.
-        [defaults.pop(attr, None) for attr in NOT_SAVED_ATTRIBUTES
-         if defaults[attr] is None]
+        [
+            defaults.pop(attr, None)
+            for attr in NOT_SAVED_ATTRIBUTES
+            if defaults[attr] is None
+        ]
         return self.update_task(task.state, task_id=uuid, defaults=defaults)
 
     def update_task(self, state, task_id, defaults=None):
         defaults = defaults or {}
-        if not defaults.get('name'):
+        if not defaults.get("name"):
             return
         return self.TaskState.objects.update_state(
             state=state,
@@ -116,7 +123,6 @@ class Camera(Polaroid):
         )
 
     def on_shutter(self, state):
-
         def _handle_tasks():
             for i, task in enumerate(state.tasks.items()):
                 self.handle_task(task)
@@ -132,8 +138,8 @@ class Camera(Polaroid):
         )
         dirty = sum(item for item in expired if item is not None)
         if dirty:
-            debug('Cleanup: Marked %s objects as dirty.', dirty)
+            debug("Cleanup: Marked %s objects as dirty.", dirty)
             self.TaskState.objects.purge()
-            debug('Cleanup: %s objects purged.', dirty)
+            debug("Cleanup: %s objects purged.", dirty)
             return dirty
         return 0

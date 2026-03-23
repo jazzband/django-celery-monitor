@@ -8,7 +8,7 @@ Celery Monitoring for Django
 :Source: https://github.com/jazzband/django-celery-monitor
 :Keywords: django, celery, events, monitoring
 
-|jazzband| |build-status| |coverage| |license| |wheel| |pyversion| |pyimp|
+|jazzband| |build-status| |coverage| |license| |pyversion|
 
 About
 =====
@@ -38,14 +38,14 @@ Other parts of django-celery were released as
 Installation
 ============
 
-You can install django_celery_monitor either via the Python Package Index (PyPI)
-or from source.
+You can install django_celery_monitor either from the Python Package Index
+(PyPI) or from a local checkout.
 
 To install using `pip`,:
 
 .. code-block:: console
 
-    $ pip install -U django_celery_monitor
+    $ python -m pip install -U django-celery-monitor
 
 Usage
 =====
@@ -56,7 +56,7 @@ To use this with your project you need to follow these steps:
 
    .. code-block:: console
 
-      $ pip install django_celery_monitor
+      $ python -m pip install django-celery-monitor
 
 #. Add ``django_celery_monitor`` to ``INSTALLED_APPS`` in your
    Django project's ``settings.py``::
@@ -68,11 +68,11 @@ To use this with your project you need to follow these steps:
 
    Note that there is no dash in the module name, only underscores.
 
-#. Create the Celery database tables by performing a database migrations:
+#. Create the Celery database tables by running migrations:
 
    .. code-block:: console
 
-      $ python manage.py migrate celery_monitor
+      $ python manage.py migrate
 
 #. Go to the Django admin of your site and look for the "Celery Monitor"
    section.
@@ -109,7 +109,7 @@ state entries in the database. Either of the three should be a
 - ``monitor_task_error_expires`` -- Defaults to ``timedelta(days=3)`` (3 days)
 
   The period of time to retain monitoring information about tasks with an
-  errornous result (one of the following event states: ``RETRY``, ``FAILURE``,
+  erroneous result (one of the following event states: ``RETRY``, ``FAILURE``,
   ``REVOKED``.
 
 - ``monitor_task_pending_expires`` -- Defaults to ``timedelta(days=5)`` (5 days)
@@ -123,6 +123,18 @@ In your Celery configuration simply set them to override the defaults, e.g.::
     from datetime import timedelta
 
     monitor_task_success_expires = timedelta(days=7)
+
+Development
+===========
+
+The project now uses ``pyproject.toml`` as the source of truth for packaging,
+tooling, and test configuration.
+
+.. code-block:: console
+
+    $ uv sync --dev
+    $ uv run pre-commit install
+    $ uv run tox
 
 .. |jazzband| image:: https://jazzband.co/static/img/badge.svg
    :target: https://jazzband.co/
@@ -139,15 +151,6 @@ In your Celery configuration simply set them to override the defaults, e.g.::
     :alt: BSD License
     :target: https://opensource.org/licenses/BSD-3-Clause
 
-.. |wheel| image:: https://img.shields.io/pypi/wheel/django-celery-monitor.svg
-    :alt: django-celery-monitor can be installed via wheel
-    :target: http://pypi.python.org/pypi/django_celery_monitor/
-
 .. |pyversion| image:: https://img.shields.io/pypi/pyversions/django-celery-monitor.svg
     :alt: Supported Python versions.
-    :target: http://pypi.python.org/pypi/django_celery_monitor/
-
-.. |pyimp| image:: https://img.shields.io/pypi/implementation/django-celery-monitor.svg
-    :alt: Support Python implementations.
-    :target: http://pypi.python.org/pypi/django_celery_monitor/
-
+    :target: https://pypi.org/project/django-celery-monitor/
